@@ -5,6 +5,7 @@ export interface Exercise {
   description: string;
   user_id: string;
   created_at?: string;
+  lastSession?: Session | null;
 }
 
 export interface Session {

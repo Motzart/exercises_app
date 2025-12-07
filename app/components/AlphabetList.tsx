@@ -3,6 +3,19 @@ import React, { useMemo } from 'react';
 import { useSetFavoriteExercise } from '~/hooks/useExercises';
 import type { Exercise } from '~/types/exercise';
 
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
+function formatDuration(seconds: number): string {
+  const minutes = seconds / 60;
+  return `${minutes.toFixed(1)} хвилин`;
+}
+
 const Stars = ({ rating }: { rating: number }) => {
   const full = Math.floor(rating);
   const half = rating % 1 >= 0.5;
@@ -30,7 +43,7 @@ export default function AlphabetList({
   const grouped = useMemo(() => {
     const sorted = [...exercises].sort((a, b) => a.name.localeCompare(b.name));
 
-    return sorted.reduce((acc: Record<string, Item[]>, item) => {
+    return sorted.reduce((acc: Record<string, Exercise[]>, item) => {
       const letter = item.name[0].toUpperCase();
       if (!acc[letter]) acc[letter] = [];
       acc[letter].push(item);
@@ -97,16 +110,18 @@ export default function AlphabetList({
                     {/* <Stars rating={item.rating} /> */}
 
                     {/* Последняя практика */}
-                    {'lastPracticed' in exercise && (
-                      <span className="text-sm text-gray-300">
-                        Last practiced: {(exercise as any).lastPracticed}
+                    {exercise.lastSession && (
+                      <span className="italic text-sm text-gray-300">
+                        Востаннє практикувався:{' '}
+                        {formatDate(exercise.lastSession.created_at)}
                       </span>
                     )}
 
                     {/* Время */}
-                    {'time' in exercise && (
-                      <span className="text-sm text-gray-400">
-                        for {(exercise as any).time}
+                    {exercise.lastSession && (
+                      <span className="italic text-sm text-gray-400">
+                        на протязі{' '}
+                        {formatDuration(exercise.lastSession.duration_seconds)}
                       </span>
                     )}
                   </div>
