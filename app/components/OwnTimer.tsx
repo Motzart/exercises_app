@@ -6,8 +6,9 @@ import {
 } from '@heroicons/react/16/solid';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
-import type { Exercise, Session } from '~/types/exercise';
+import type { CreateSessionInput, Exercise, Session } from '~/types/exercise';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
+import { useCreateSession } from '~/hooks/useSession';
 
 const OwnTimer = ({
   onClose,
@@ -17,7 +18,8 @@ const OwnTimer = ({
   exercise: Exercise | null;
 }) => {
   const { user } = useContext(SupabaseAuthContext);
-  const [session, setSession] = useState<Session | null>(null);
+  const createSessionMutation = useCreateSession();
+  const [session, setSession] = useState<CreateSessionInput | null>(null);
   const [displayDuration, setDisplayDuration] = useState<number>(0);
   const startTimeRef = useRef<Date | null>(null);
   const accumulatedSecondsRef = useRef<number>(0);
@@ -90,7 +92,7 @@ const OwnTimer = ({
     start();
   };
 
-  const handleStop = () => {
+  const handleStop = async () => {
     if (!exercise || !user?.id || !startTimeRef.current) {
       onClose();
       return;
@@ -109,18 +111,20 @@ const OwnTimer = ({
       durationSeconds = accumulatedSecondsRef.current;
     }
 
-    const sessionData: Session = {
-      id: crypto.randomUUID(),
-      created_at: new Date().toISOString(),
+    const sessionData: CreateSessionInput = {
       exercise_id: exercise.id,
-      user_id: user.id,
-      start_at: startAt.toISOString(),
-      end_at: endAt.toISOString(),
+      started_at: startAt.toISOString(),
+      ended_at: endAt.toISOString(),
       duration_seconds: durationSeconds,
     };
 
-    console.log(sessionData);
-    setSession(sessionData);
+    try {
+      await createSessionMutation.mutateAsync(sessionData);
+      setSession(sessionData);
+    } catch (error) {
+      console.error('Failed to create session:', error);
+    }
+
     onClose();
   };
 

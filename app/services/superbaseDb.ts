@@ -1,5 +1,5 @@
 import { supabaseClient } from '~/lib/supabaseClient';
-import type { CreateExerciseInput } from '~/types/exercise';
+import type { CreateExerciseInput, CreateSessionInput } from '~/types/exercise';
 
 async function getCurrentUserId(): Promise<string> {
   const {
@@ -20,6 +20,18 @@ export async function createExercise(exercise: CreateExerciseInput) {
 
   if (error) {
     throw new Error(error.message || 'Failed to create exercises');
+  }
+
+  return data;
+}
+
+export async function createSession(session: CreateSessionInput) {
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .insert(session);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to create session');
   }
 
   return data;

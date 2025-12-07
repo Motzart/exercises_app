@@ -12,9 +12,10 @@ export interface Session {
   created_at: string;
   exercise_id: string;
   user_id: string;
-  start_at: string;
-  end_at: string;
+  started_at: string;
+  ended_at: string;
   duration_seconds: number;
 }
 
+export type CreateSessionInput = Omit<Session, 'id' | 'created_at' | 'user_id'>;
 export type CreateExerciseInput = Omit<Exercise, 'id' | 'created_at'>;
