@@ -31,9 +31,7 @@ export async function createExercise(exercise: CreateExerciseInput) {
 }
 
 export async function createSession(session: CreateSessionInput) {
-  const { data, error } = await supabaseClient
-    .from('sessions')
-    .insert(session);
+  const { data, error } = await supabaseClient.from('sessions').insert(session);
 
   if (error) {
     throw new Error(error.message || 'Failed to create session');
@@ -77,7 +75,7 @@ export async function getExercises(filters?: { favorite?: boolean }) {
     data?.map((exercise) => {
       // sessions может быть массивом (если limit не сработал) или объектом/null
       const sessions = exercise.sessions as Array<Session> | Session | null;
-      
+
       let lastSession: Session | null = null;
       if (Array.isArray(sessions)) {
         lastSession = sessions.length > 0 ? sessions[0] : null;
@@ -110,4 +108,122 @@ export async function setFavoriteItem(exerciseId: string, isFavorite: boolean) {
   }
 
   return data;
+}
+
+export async function getTotalDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  // This will be faster for large volumes of data (1000+ records)
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_total_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: if RPC function is not created, use client-side aggregation
+  // For optimization, it's recommended to create RPC function in Supabase SQL Editor:
+  // CREATE OR REPLACE FUNCTION get_total_duration_seconds(p_user_id UUID)
+  // RETURNS INTEGER AS $$
+  // BEGIN
+  //   RETURN COALESCE(SUM(duration_seconds), 0)::INTEGER
+  //   FROM sessions
+  //   WHERE user_id = p_user_id;
+  // END;
+  // $$ LANGUAGE plpgsql SECURITY DEFINER;
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get total duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
+export async function getTodayDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  // This will be faster for large volumes of data (1000+ records)
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_today_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: if RPC function is not created, use client-side aggregation
+  // For optimization, it's recommended to create RPC function in Supabase SQL Editor
+  // Get start and end of today in UTC for consistency with database timezone
+  const now = new Date();
+  const todayUTC = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
+  const startOfToday = todayUTC.toISOString();
+
+  const endOfTodayUTC = new Date(todayUTC);
+  endOfTodayUTC.setUTCHours(23, 59, 59, 999);
+  const endOfTodayISO = endOfTodayUTC.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfToday)
+    .lte('created_at', endOfTodayISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get today duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
+export async function getExercisesCount() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL COUNT() on the database side for better performance
+  const { count, error } = await supabaseClient
+    .from('exercises')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get exercises count');
+  }
+
+  return count || 0;
+}
+
+export function formatDuration(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m`;
 }

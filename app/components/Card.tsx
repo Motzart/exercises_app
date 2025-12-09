@@ -24,10 +24,10 @@ export default function Card({
       >
         <div
           className={
-            'bg-green-600 flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white'
+            'bg-green-500 flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white'
           }
         >
-          <MusicalNoteIcon className="size-6 text-green-100" />
+          <MusicalNoteIcon className="size-6 text-white" />
         </div>
         <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-t border-r border-b border-white/10 bg-gray-800/50">
           <div className="flex-1 truncate px-4 py-2 text-sm">

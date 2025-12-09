@@ -3,6 +3,7 @@ import {
   ClockIcon,
   DocumentIcon,
   HeartIcon,
+  ListBulletIcon,
   PlusIcon,
 } from '@heroicons/react/16/solid';
 import type { Route } from './+types/home';
@@ -10,12 +11,10 @@ import Card from '~/components/Card';
 import Devider from '~/components/Devider';
 import { Link } from 'react-router';
 import FavoritesList from '~/components/FavoritesList';
+import HomeStatsBlock from '~/components/HomeStatsBlock';
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: 'Smart Diary' },
-    { name: 'description', content: 'Welcome to Smart Diary!' },
-  ];
+  return [{ title: 'Practice Journal' }, { name: 'description' }];
 }
 
 const stats = [
@@ -67,20 +66,7 @@ export default function HomePage() {
     <>
       <main>
         <div className="container mx-auto relative isolate overflow-hidden pt-16">
-          {/* Stats */}
-          <dl className="grid grid-cols-1 gap-x-8 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mt-8 lg:grid-cols-4">
-            {stats.map((stat, statIdx) => (
-              <div
-                key={statIdx}
-                className="flex items-center flex-col-reverse gap-y-3 border-b-2 border-indigo-500 pl-6"
-              >
-                <dt className="text-base/7 text-gray-300">{stat.label}</dt>
-                <dd className="flex flex-row items-center gap-x-2 text-3xl font-semibold tracking-tight text-white">
-                  {stat.icon} {stat.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
+          <HomeStatsBlock />
         </div>
         <div className="container mx-auto relative isolate overflow-hidden">
           <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -90,7 +76,8 @@ export default function HomePage() {
                 key={item.name}
                 className="cursor-pointer hover:bg-gray-800/50 overflow-hidden rounded-lg bg-gray-800/75 px-4 py-5 shadow-sm inset-ring inset-ring-white/10 sm:p-6"
               >
-                <dt className="text-center truncate text-sm font-medium text-gray-300 uppercase">
+                <dt className="text-center truncate text-sm font-medium text-gray-300 uppercase flex items-center justify-center gap-x-2">
+                  <ListBulletIcon className="size-6 text-green-300" />
                   {item.name}
                 </dt>
               </Link>
