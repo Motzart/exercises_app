@@ -86,6 +86,7 @@ export function useCreateExercise() {
     mutationFn: (exercise: CreateExerciseInput) => createExercise(exercise),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      queryClient.invalidateQueries({ queryKey: ['exercisesCount'] });
     },
   });
 }
