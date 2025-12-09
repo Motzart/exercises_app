@@ -8,7 +8,8 @@ export function useCreateSession() {
   return useMutation({
     mutationFn: (session: CreateSessionInput) => createSession(session),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      queryClient.invalidateQueries({ queryKey: ['totalDuration'] });
+      queryClient.invalidateQueries({ queryKey: ['todayDuration'] });
     },
   });
 }

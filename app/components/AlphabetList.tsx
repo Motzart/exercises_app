@@ -1,5 +1,6 @@
 import { HeartIcon, StarIcon } from '@heroicons/react/16/solid';
 import React, { useMemo } from 'react';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSetFavoriteExercise } from '~/hooks/useExercises';
 import type { Exercise } from '~/types/exercise';
 
@@ -33,9 +34,13 @@ const Stars = ({ rating }: { rating: number }) => {
 export default function AlphabetList({
   exercises,
   onItemClick,
+  onEdit,
+  onDelete,
 }: {
   exercises: Exercise[];
   onItemClick: (exercises: Exercise) => void;
+  onEdit?: (exercise: Exercise) => void;
+  onDelete?: (exercise: Exercise) => void;
 }) {
   const setFavoriteItemMutation = useSetFavoriteExercise();
 
@@ -127,8 +132,46 @@ export default function AlphabetList({
                   </div>
                 </div>
 
-                {/* Три точки */}
-                <button className="text-gray-300 text-2xl px-2">⋮</button>
+                {/* Три точки з випадаючим меню */}
+                <Menu as="div" className="relative z-[9999]">
+                  <MenuButton
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-gray-300 text-2xl px-2 hover:text-white focus:outline-none cursor-pointer"
+                  >
+                    ⋮
+                  </MenuButton>
+                  <MenuItems
+                    transition
+                    className="absolute right-0 z-[9999] mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg outline -outline-offset-1 outline-white/10 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                  >
+                    {onEdit && (
+                      <MenuItem>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(exercise);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-white/5 data-focus:bg-white/5 data-focus:outline-hidden"
+                        >
+                          Редагувати
+                        </button>
+                      </MenuItem>
+                    )}
+                    {onDelete && (
+                      <MenuItem>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(exercise);
+                          }}
+                          className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 data-focus:bg-white/5 data-focus:outline-hidden"
+                        >
+                          Видалити
+                        </button>
+                      </MenuItem>
+                    )}
+                  </MenuItems>
+                </Menu>
               </div>
             ))}
           </div>

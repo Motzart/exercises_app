@@ -24,9 +24,9 @@ import { Link, useLocation } from 'react-router';
 
 const navigation = [
   { name: 'Головна', href: '/' },
-  { name: 'Overview', href: '/overview' },
-  { name: 'History', href: '/history' },
-  { name: 'Calendar', href: '/calendar' },
+  { name: 'Стата', href: '/overview' },
+  { name: 'Історія', href: '/history' },
+  { name: 'Календар', href: '/calendar' },
 ];
 
 const Navbar = () => {

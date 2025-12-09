@@ -227,3 +227,84 @@ export function formatDuration(seconds: number): string {
 
   return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m`;
 }
+
+export interface ExerciseWeekStats {
+  exerciseId: string;
+  exerciseName: string;
+  durationMinutes: number;
+}
+
+export async function getExercisesWeekStats(): Promise<ExerciseWeekStats[]> {
+  const userId = await getCurrentUserId();
+
+  // Get start of current week (Monday)
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const diff = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Adjust when day is Sunday
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfWeekISO = startOfWeek.toISOString();
+
+  // Get end of current week (Sunday)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+  const endOfWeekISO = endOfWeek.toISOString();
+
+  // Get all sessions for this week with exercise info
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select(
+      `
+      exercise_id,
+      duration_seconds,
+      exercises!inner(
+        id,
+        name
+      )
+    `
+    )
+    .eq('user_id', userId)
+    .gte('created_at', startOfWeekISO)
+    .lte('created_at', endOfWeekISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get exercises week stats');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return [];
+  }
+
+  // Group by exercise and sum duration
+  const statsMap = new Map<string, { name: string; totalSeconds: number }>();
+
+  sessions.forEach((session: any) => {
+    const exerciseId = session.exercise_id;
+    const exerciseName = session.exercises?.name || 'Unknown';
+    const durationSeconds = session.duration_seconds || 0;
+
+    if (statsMap.has(exerciseId)) {
+      const existing = statsMap.get(exerciseId)!;
+      existing.totalSeconds += durationSeconds;
+    } else {
+      statsMap.set(exerciseId, {
+        name: exerciseName,
+        totalSeconds: durationSeconds,
+      });
+    }
+  });
+
+  // Convert to array and format
+  const stats: ExerciseWeekStats[] = Array.from(statsMap.entries()).map(
+    ([exerciseId, { name, totalSeconds }]) => ({
+      exerciseId,
+      exerciseName: name,
+      durationMinutes: Math.round(totalSeconds / 60), // Round to whole minutes
+    })
+  );
+
+  // Sort by duration descending
+  return stats.sort((a, b) => b.durationMinutes - a.durationMinutes);
+}

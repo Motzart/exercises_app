@@ -30,6 +30,8 @@ const ItemsPage = () => {
           <AlphabetList
             exercises={exercises}
             onItemClick={handleOpenPracticeModal}
+            onEdit={() => {}}
+            onDelete={() => {}}
           />
         )}
         <div className="fixed bottom-10 right-10">

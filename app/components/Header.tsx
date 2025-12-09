@@ -12,9 +12,9 @@ import { supabaseClient } from '~/lib/supabaseClient';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Overview', href: '#' },
-  { name: 'History', href: '#' },
-  { name: 'Calendar', href: '#' },
+  { name: 'Стата', href: '#' },
+  { name: 'Історія', href: '#' },
+  { name: 'Календар', href: '#' },
 ];
 
 const Header = () => {

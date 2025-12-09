@@ -4,6 +4,8 @@ import {
   getTotalDurationSeconds,
   getTodayDurationSeconds,
   getExercisesCount,
+  getExercisesWeekStats,
+  type ExerciseWeekStats,
 } from '~/services/superbaseDb';
 
 export function useTotalDuration() {
@@ -33,6 +35,16 @@ export function useExercisesCount() {
     queryKey: ['exercisesCount'],
     queryFn: async () => {
       return await getExercisesCount();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useExercisesWeekStats() {
+  return useQuery<ExerciseWeekStats[]>({
+    queryKey: ['exercisesWeekStats'],
+    queryFn: async () => {
+      return await getExercisesWeekStats();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
