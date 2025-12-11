@@ -41,3 +41,13 @@ export interface DaySessions {
   totalDurationSeconds: number;
   exercises: ExerciseDayStats[];
 }
+
+export interface Note {
+  id: string;
+  content: string;
+  user_id: string;
+  exercise_id: string | null;
+  created_at: string;
+}
+
+export type CreateNoteInput = Omit<Note, 'id' | 'created_at' | 'user_id'>;

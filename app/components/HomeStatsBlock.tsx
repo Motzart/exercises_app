@@ -68,7 +68,7 @@ const HomeStatsBlock = () => {
           className="flex items-center flex-col-reverse gap-y-3 border-b-2 border-indigo-500"
         >
           <dt className="text-base/7 text-gray-300">{stat.label}</dt>
-          <dd className="flex flex-row items-center gap-x-2 text-3xl font-semibold tracking-tight text-white">
+          <dd className="flex flex-row items-center gap-x-2 text-3xl font-semibold tracking-tight text-blue-200">
             {stat.icon} {stat.value}
           </dd>
         </div>

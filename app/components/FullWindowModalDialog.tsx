@@ -4,7 +4,7 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { Item } from '~/types/exercise';
 
 export default function FullWindowModalDialog({
@@ -37,14 +37,14 @@ export default function FullWindowModalDialog({
             >
               {item?.name}
             </DialogTitle>
-            <div className="absolute right-4 top-4">
+            <div className="absolute left-4 top-4">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-md bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="rounded-md bg-white/10 p-2 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
               >
                 <span className="sr-only">Close</span>
-                <XMarkIcon aria-hidden="true" className="size-6" />
+                <ArrowLeftIcon aria-hidden="true" className="size-6" />
               </button>
             </div>
             {children}

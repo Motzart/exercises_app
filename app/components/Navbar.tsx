@@ -65,7 +65,7 @@ const Navbar = () => {
               </DisclosureButton>
             </div>
             <div className="flex shrink-0 items-center text-2xl font-light">
-              Practice Journal
+              <link></link>Practice Journal
             </div>
             <div className="hidden md:ml-6 md:flex md:flex-1 md:justify-center">
               {navigation.map((item, itemIdx) => {

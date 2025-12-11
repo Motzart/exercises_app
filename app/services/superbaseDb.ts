@@ -1,10 +1,12 @@
 import { supabaseClient } from '~/lib/supabaseClient';
 import type {
   CreateExerciseInput,
+  CreateNoteInput,
   CreateSessionInput,
   DaySessions,
   Exercise,
   ExerciseDayStats,
+  Note,
   Session,
 } from '~/types/exercise';
 
@@ -416,4 +418,61 @@ export async function getSessionsByDay(): Promise<DaySessions[]> {
     .sort((a, b) => b.dateTime.localeCompare(a.dateTime)); // Sort by date descending
 
   return days;
+}
+
+export async function createNote(note: CreateNoteInput) {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('notes')
+    .insert({
+      ...note,
+      user_id: userId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to create note');
+  }
+
+  return data as Note;
+}
+
+export async function getNotes(exerciseId?: string | null): Promise<Note[]> {
+  const userId = await getCurrentUserId();
+
+  let query = supabaseClient
+    .from('notes')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (exerciseId) {
+    query = query.eq('exercise_id', exerciseId);
+  } else {
+    query = query.is('exercise_id', null);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get notes');
+  }
+
+  return (data as Note[]) || [];
+}
+
+export async function deleteNote(noteId: string) {
+  const userId = await getCurrentUserId();
+
+  const { error } = await supabaseClient
+    .from('notes')
+    .delete()
+    .eq('id', noteId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to delete note');
+  }
 }

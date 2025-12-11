@@ -9,6 +9,7 @@ import { useStopwatch } from 'react-timer-hook';
 import type { CreateSessionInput, Exercise, Session } from '~/types/exercise';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useCreateSession } from '~/hooks/useSession';
+import SliderNotes from './SliderNotes';
 
 const OwnTimer = ({
   onClose,
@@ -23,7 +24,7 @@ const OwnTimer = ({
   const startTimeRef = useRef<Date | null>(null);
 
   const { totalSeconds, isRunning, start, pause } = useStopwatch({
-    autoStart: true,
+    autoStart: false,
     interval: 20,
   });
 
@@ -72,34 +73,33 @@ const OwnTimer = ({
   const displayHours = Math.floor(totalSeconds / 3600);
   const displayMinutes = Math.floor((totalSeconds % 3600) / 60);
   const displaySeconds = totalSeconds % 60;
-  // Progress bar configuration: 20 minutes = 1200 seconds, 4 segments of 5 minutes each
-  const TOTAL_DURATION_SECONDS = 20 * 60; // 1200 seconds
+  // Progress bar configuration: 15 minutes = 900 seconds, 3 segments of 5 minutes each
+  const TOTAL_DURATION_SECONDS = 15 * 60; // 900 seconds
   const SEGMENT_DURATION_SECONDS = 5 * 60; // 300 seconds per segment
 
   // Calculate which segment we're in and how much of it is filled
   const currentSegment = Math.min(
     Math.floor(totalSeconds / SEGMENT_DURATION_SECONDS),
-    3,
+    2,
   );
   const segmentProgress =
-    currentSegment < 4
+    currentSegment < 3
       ? ((totalSeconds % SEGMENT_DURATION_SECONDS) / SEGMENT_DURATION_SECONDS) *
         100
       : 100;
 
   const segmentColors = [
     'bg-red-500', // 0-5 minutes: red
-    'bg-orange-500', // 5-10 minutes: orange
-    'bg-yellow-500', // 10-15 minutes: yellow
-    'bg-green-500', // 15-20 minutes: green
+    'bg-yellow-500', // 5-10 minutes: yellow
+    'bg-green-500', // 10-15 minutes: green
   ];
 
-  const timeMarkers = ['5хв', '10хв', '15хв', '20хв'];
+  const timeMarkers = ['5хв', '10хв', '15хв'];
 
   return (
     <div className="flex flex-col w-full h-full">
       {/* Timer content */}
-      <div className="flex flex-col items-center justify-center pb-32 relative">
+      <div className="flex flex-col items-center justify-center relative">
         <div
           className={`text-6xl font-bold w-full text-center flex flex-row items-center justify-center gap-1 transition-opacity duration-300 ${
             !isRunning ? 'opacity-40' : ''
@@ -153,11 +153,12 @@ const OwnTimer = ({
           </button>
         </div>
       </div>
+      <SliderNotes exerciseId={exercise?.id || null} />
 
       {/* Full-width progress bar at bottom */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-200 z-50">
         <div className="flex h-8 w-full relative">
-          {[0, 1, 2, 3].map((segmentIndex) => {
+          {[0, 1, 2].map((segmentIndex) => {
             const isCompleted = segmentIndex < currentSegment;
             const isCurrent = segmentIndex === currentSegment;
             const segmentFillPercent = isCompleted
@@ -170,7 +171,7 @@ const OwnTimer = ({
               <div
                 key={segmentIndex}
                 className="relative"
-                style={{ width: '25%' }}
+                style={{ width: '33.33%' }}
               >
                 <div
                   className={`${segmentColors[segmentIndex]} h-full transition-all duration-300 ease-linear`}
@@ -188,7 +189,7 @@ const OwnTimer = ({
             <div
               key={index}
               className="flex-1 text-center text-xs text-white font-medium"
-              style={{ width: '25%' }}
+              style={{ width: '33.33%' }}
             >
               {marker}
             </div>
