@@ -18,6 +18,15 @@ export interface Session {
   duration_seconds: number;
 }
 
+export interface PlayList {
+  id: string;
+  name: string;
+  description: string;
+  user_id: string;
+  created_at: string;
+  exercises: Exercise[];
+}
+
 export type CreateSessionInput = Omit<Session, 'id' | 'created_at' | 'user_id'>;
 export type CreateExerciseInput = Omit<Exercise, 'id' | 'created_at'>;
 

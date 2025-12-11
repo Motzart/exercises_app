@@ -2,6 +2,8 @@ import {
   CalendarIcon,
   ClockIcon,
   DocumentIcon,
+  FolderIcon,
+  FolderOpenIcon,
   HeartIcon,
   ListBulletIcon,
   PlusIcon,
@@ -46,7 +48,7 @@ const SecondaryNavigation = [
 ];
 const itemsPlayList = [
   {
-    name: 'Play List 1',
+    name: 'Warming Up',
     initials: 'GA',
     href: '#',
     members: 16,
@@ -86,22 +88,26 @@ export default function HomePage() {
         </div>
         <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">
           <div className="flex items-center gap-x-2">
-            <h2 className="text-lg font-light uppercase">Недавні списки:</h2>
+            <h2 className="text-lg font-light">Недавні списки:</h2>
           </div>
 
           <ul
             role="list"
-            className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
+            className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-8"
           >
             {itemsPlayList.map((exercise) => (
-              <Card
-                handleClick={() => {}}
-                key={exercise.name}
-                exercise={exercise}
-              />
+              <div className="relative flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
+                <DocumentIcon className="size-18 text-gray-500" />
+                <p className="absolute top-10 right-16 text-gray-800 text-lg">2</p>
+                <p className="text-gray-500">{exercise.name}</p>
+              </div>
             ))}
+            <div className="relative flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
+                <DocumentIcon className="size-18 text-white" />
+                <p className="absolute top-9 right-15 text-gray-800 text-2xl">+</p>
+                <p className="text-gray-500">Додати</p>
+              </div>
           </ul>
-          <Devider buttonText="Створити список" />
         </div>
 
         <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">

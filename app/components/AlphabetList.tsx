@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { useSetFavoriteExercise } from '~/hooks/useExercises';
 import type { Exercise } from '~/types/exercise';
+import { formatDuration } from '~/utils';
 
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
@@ -10,11 +11,6 @@ function formatDate(dateString: string): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = date.getFullYear();
   return `${day}.${month}.${year}`;
-}
-
-function formatDuration(seconds: number): string {
-  const minutes = seconds / 60;
-  return `${minutes.toFixed(1)} хвилин`;
 }
 
 const Stars = ({ rating }: { rating: number }) => {

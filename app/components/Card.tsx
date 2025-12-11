@@ -1,9 +1,11 @@
+import { ClockIcon } from '@heroicons/react/16/solid';
 import {
   EllipsisVerticalIcon,
   MusicalNoteIcon,
 } from '@heroicons/react/20/solid';
 import { Link } from 'react-router';
 import type { Exercise } from '~/types/exercise';
+import { formatDuration } from '~/utils';
 
 function classNames(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
@@ -34,7 +36,9 @@ export default function Card({
             <div className="font-medium text-white hover:text-gray-200">
               {exercise.name}
             </div>
-            <p className="text-gray-400">0 Members</p>
+            <p className="text-gray-500 italic flex flex-row gap-2 items-center">
+              <ClockIcon className="size-4 text-gray-500" /> {' '}
+              {formatDuration(exercise.lastSession?.duration_seconds ?? 0)}</p>
           </div>
           <div className="shrink-0 pr-2">
             <button
