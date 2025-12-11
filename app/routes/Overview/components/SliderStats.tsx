@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import React, { useRef } from 'react';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 import { ClockIcon } from '@heroicons/react/16/solid';
-import { useExercisesWeekStats } from "~/hooks/useTotalDuration";
+import { useExercisesWeekStats } from '~/hooks/useTotalDuration';
 
 const SliderStats = () => {
   const sliderRef = useRef<Slider>(null);

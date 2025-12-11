@@ -20,3 +20,15 @@ export interface Session {
 
 export type CreateSessionInput = Omit<Session, 'id' | 'created_at' | 'user_id'>;
 export type CreateExerciseInput = Omit<Exercise, 'id' | 'created_at'>;
+
+export interface ExerciseDayStats {
+  exerciseName: string;
+  totalDurationSeconds: number;
+}
+
+export interface DaySessions {
+  date: string;
+  dateTime: string;
+  totalDurationSeconds: number;
+  exercises: ExerciseDayStats[];
+}

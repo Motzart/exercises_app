@@ -10,6 +10,7 @@ export function useCreateSession() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['totalDuration'] });
       queryClient.invalidateQueries({ queryKey: ['todayDuration'] });
+      queryClient.invalidateQueries({ queryKey: ['sessionsByDay'] });
     },
   });
 }

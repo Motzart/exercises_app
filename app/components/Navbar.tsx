@@ -183,16 +183,18 @@ const Navbar = () => {
         <div className="border-t border-white/10 pt-4 pb-3">
           <div className="flex items-center px-4 sm:px-6">
             <div className="shrink-0">
-            <img
+              <img
                 alt=""
                 src={user_metadata?.avatar_url}
                 className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
               />
             </div>
             <div className="ml-3">
-              <div className="text-base font-medium text-white">{user_metadata?.name}</div>
+              <div className="text-base font-medium text-white">
+                {user_metadata?.name}
+              </div>
               <div className="text-sm font-medium text-gray-400">
-              {user_metadata?.email}
+                {user_metadata?.email}
               </div>
             </div>
             <button

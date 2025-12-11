@@ -2,7 +2,9 @@ import { supabaseClient } from '~/lib/supabaseClient';
 import type {
   CreateExerciseInput,
   CreateSessionInput,
+  DaySessions,
   Exercise,
+  ExerciseDayStats,
   Session,
 } from '~/types/exercise';
 
@@ -263,7 +265,7 @@ export async function getExercisesWeekStats(): Promise<ExerciseWeekStats[]> {
         id,
         name
       )
-    `
+    `,
     )
     .eq('user_id', userId)
     .gte('created_at', startOfWeekISO)
@@ -302,9 +304,116 @@ export async function getExercisesWeekStats(): Promise<ExerciseWeekStats[]> {
       exerciseId,
       exerciseName: name,
       durationMinutes: Math.round(totalSeconds / 60), // Round to whole minutes
-    })
+    }),
   );
 
   // Sort by duration descending
   return stats.sort((a, b) => b.durationMinutes - a.durationMinutes);
+}
+
+export async function getSessionsByDay(): Promise<DaySessions[]> {
+  const userId = await getCurrentUserId();
+
+  // Get all sessions with exercise info, ordered by date descending
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select(
+      `
+      created_at,
+      duration_seconds,
+      exercises!inner(
+        id,
+        name
+      )
+    `,
+    )
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get sessions by day');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return [];
+  }
+
+  // Group by day and then by exercise
+  const daysMap = new Map<
+    string,
+    Map<string, { name: string; totalSeconds: number }>
+  >();
+
+  sessions.forEach((session: any) => {
+    const sessionDate = new Date(session.created_at);
+    const dateKey = sessionDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const exerciseId = session.exercises?.id;
+    const exerciseName = session.exercises?.name || 'Unknown';
+    const durationSeconds = session.duration_seconds || 0;
+
+    if (!daysMap.has(dateKey)) {
+      daysMap.set(dateKey, new Map());
+    }
+
+    const exercisesMap = daysMap.get(dateKey)!;
+
+    if (exercisesMap.has(exerciseId)) {
+      const existing = exercisesMap.get(exerciseId)!;
+      existing.totalSeconds += durationSeconds;
+    } else {
+      exercisesMap.set(exerciseId, {
+        name: exerciseName,
+        totalSeconds: durationSeconds,
+      });
+    }
+  });
+
+  // Convert to array format
+  const days: DaySessions[] = Array.from(daysMap.entries())
+    .map(([dateTime, exercisesMap]) => {
+      const exercises: ExerciseDayStats[] = Array.from(
+        exercisesMap.values(),
+      ).map(({ name, totalSeconds }) => ({
+        exerciseName: name,
+        totalDurationSeconds: totalSeconds,
+      }));
+
+      // Calculate total duration for the day
+      const totalDurationSeconds = exercises.reduce(
+        (sum, exercise) => sum + exercise.totalDurationSeconds,
+        0,
+      );
+
+      // Format date for display
+      const date = new Date(dateTime);
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      let displayDate = dateTime;
+      if (date.toDateString() === today.toDateString()) {
+        displayDate = 'Today';
+      } else if (date.toDateString() === yesterday.toDateString()) {
+        displayDate = 'Yesterday';
+      } else {
+        displayDate = date.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+      }
+
+      return {
+        date: displayDate,
+        dateTime,
+        totalDurationSeconds,
+        exercises: exercises.sort(
+          (a, b) => b.totalDurationSeconds - a.totalDurationSeconds,
+        ),
+      };
+    })
+    .sort((a, b) => b.dateTime.localeCompare(a.dateTime)); // Sort by date descending
+
+  return days;
 }

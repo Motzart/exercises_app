@@ -2,9 +2,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createExercise,
   getExercises,
+  getSessionsByDay,
   setFavoriteItem,
 } from '~/services/superbaseDb';
-import type { CreateExerciseInput, Exercise } from '~/types/exercise';
+import type {
+  CreateExerciseInput,
+  DaySessions,
+  Exercise,
+} from '~/types/exercise';
 
 interface UseItemsFilters {
   favorite?: boolean;
@@ -88,5 +93,15 @@ export function useCreateExercise() {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
       queryClient.invalidateQueries({ queryKey: ['exercisesCount'] });
     },
+  });
+}
+
+export function useSessionsByDay() {
+  return useQuery({
+    queryKey: ['sessionsByDay'],
+    queryFn: async () => {
+      return await getSessionsByDay();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
