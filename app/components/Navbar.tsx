@@ -64,12 +64,8 @@ const Navbar = () => {
                 />
               </DisclosureButton>
             </div>
-            <div className="flex shrink-0 items-center">
-              <img
-                alt="Your Company"
-                src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
-                className="h-8 w-auto"
-              />
+            <div className="flex shrink-0 items-center text-2xl font-light">
+              Practice Journal
             </div>
             <div className="hidden md:ml-6 md:flex md:flex-1 md:justify-center">
               {navigation.map((item, itemIdx) => {
@@ -134,15 +130,7 @@ const Navbar = () => {
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
                       >
-                        Your profile
-                      </a>
-                    </MenuItem>
-                    <MenuItem>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
-                      >
-                        Settings
+                        Налаштування
                       </a>
                     </MenuItem>
                     <MenuItem>
@@ -150,7 +138,7 @@ const Navbar = () => {
                         onClick={handleLogout}
                         className="block px-4 py-2 text-sm text-gray-300 data-focus:bg-white/5 data-focus:outline-hidden"
                       >
-                        Sign out
+                        Вихід
                       </div>
                     </MenuItem>
                   </MenuItems>
@@ -195,16 +183,16 @@ const Navbar = () => {
         <div className="border-t border-white/10 pt-4 pb-3">
           <div className="flex items-center px-4 sm:px-6">
             <div className="shrink-0">
-              <img
+            <img
                 alt=""
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                className="size-10 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
+                src={user_metadata?.avatar_url}
+                className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
               />
             </div>
             <div className="ml-3">
-              <div className="text-base font-medium text-white">Tom Cook</div>
+              <div className="text-base font-medium text-white">{user_metadata?.name}</div>
               <div className="text-sm font-medium text-gray-400">
-                tom@example.com
+              {user_metadata?.email}
               </div>
             </div>
             <button
@@ -222,21 +210,14 @@ const Navbar = () => {
               href="#"
               className="block px-4 py-2 text-base font-medium text-gray-400 hover:bg-white/5 hover:text-white"
             >
-              Your profile
+              Налаштування
             </DisclosureButton>
             <DisclosureButton
               as="a"
               href="#"
               className="block px-4 py-2 text-base font-medium text-gray-400 hover:bg-white/5 hover:text-white"
             >
-              Settings
-            </DisclosureButton>
-            <DisclosureButton
-              as="a"
-              href="#"
-              className="block px-4 py-2 text-base font-medium text-gray-400 hover:bg-white/5 hover:text-white"
-            >
-              Sign out
+              Вихід
             </DisclosureButton>
           </div>
         </div>
