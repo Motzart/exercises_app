@@ -476,3 +476,38 @@ export async function deleteNote(noteId: string) {
     throw new Error(error.message || 'Failed to delete note');
   }
 }
+
+export async function deleteExercise(exerciseId: string) {
+  const userId = await getCurrentUserId();
+
+  const { error } = await supabaseClient
+    .from('exercises')
+    .delete()
+    .eq('id', exerciseId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to delete exercise');
+  }
+}
+
+export async function updateExercise(
+  exerciseId: string,
+  updates: Partial<Pick<Exercise, 'name' | 'favorite' | 'description'>>,
+) {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('exercises')
+    .update(updates)
+    .eq('id', exerciseId)
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to update exercise');
+  }
+
+  return data as Exercise;
+}

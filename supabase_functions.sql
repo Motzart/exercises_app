@@ -66,3 +66,12 @@ CREATE POLICY "Users can delete their own notes"
   ON notes FOR DELETE
   USING (auth.uid() = user_id);
 
+-- Политика безопасности: пользователи могут обновлять свои упражнения
+CREATE POLICY "Users can update their own exercises"
+  ON exercises FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- Политика безопасности: пользователи могут удалять свои упражнения
+CREATE POLICY "Users can delete their own exercises"
+  ON exercises FOR DELETE
+  USING (auth.uid() = user_id);

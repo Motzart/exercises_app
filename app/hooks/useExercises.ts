@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createExercise,
+  deleteExercise,
   getExercises,
   getSessionsByDay,
   setFavoriteItem,
+  updateExercise,
 } from '~/services/superbaseDb';
 import type {
   CreateExerciseInput,
@@ -103,5 +105,34 @@ export function useSessionsByDay() {
       return await getSessionsByDay();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useDeleteExercise() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (exerciseId: string) => deleteExercise(exerciseId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+      queryClient.invalidateQueries({ queryKey: ['exercisesCount'] });
+    },
+  });
+}
+
+export function useUpdateExercise() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      exerciseId,
+      updates,
+    }: {
+      exerciseId: string;
+      updates: Partial<Pick<Exercise, 'name' | 'favorite' | 'description'>>;
+    }) => updateExercise(exerciseId, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
+    },
   });
 }
