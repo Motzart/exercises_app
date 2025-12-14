@@ -52,7 +52,9 @@ export default function App() {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <div className="pt-16">
+        <Outlet />
+      </div>
       <ModalManager />
     </>
   );
