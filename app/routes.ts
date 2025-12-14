@@ -14,6 +14,7 @@ export default [
     route('/history', 'routes/HistoryPage.tsx'),
     route('/play-lists', 'routes/PlayListsPage.tsx'),
     route('/exercises', 'routes/ExercisesPage.tsx'),
+    route('/helpers', 'routes/Helpers/HelpersPage.tsx'),
   ]),
   route('/login', 'routes/LoginPage.tsx'),
 ] satisfies RouteConfig;

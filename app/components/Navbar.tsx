@@ -26,7 +26,8 @@ const navigation = [
   { name: 'Головна', href: '/' },
   { name: 'Стата', href: '/overview' },
   { name: 'Історія', href: '/history' },
-  { name: 'Календар', href: '/calendar' },
+  // { name: 'Календар', href: '/calendar' },
+  // { name: 'Рандомник', href: '/helpers' },
 ];
 
 const Navbar = () => {

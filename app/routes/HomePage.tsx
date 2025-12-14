@@ -51,14 +51,28 @@ const itemsPlayList = [
     name: 'Warming Up',
     initials: 'GA',
     href: '#',
-    members: 16,
+    members: 4,
+    bgColor: 'bg-pink-700',
+  },
+  {
+    name: 'Єтюд Бертіні',
+    initials: 'GA',
+    href: '#',
+    members: 3,
+    bgColor: 'bg-pink-700',
+  },
+  {
+    name: 'Ганон 7,8,9',
+    initials: 'GA',
+    href: '#',
+    members: 3,
     bgColor: 'bg-pink-700',
   },
   {
     name: 'Play List 2',
     initials: 'CD',
     href: '#',
-    members: 12,
+    members: 3,
     bgColor: 'bg-purple-700',
   },
 ];
@@ -96,13 +110,13 @@ export default function HomePage() {
             className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-8"
           >
             {itemsPlayList.map((exercise) => (
-              <div className="relative flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
-                <DocumentIcon className="size-18 text-blue-200" />
-                <p className="absolute top-10 right-16 text-gray-800 text-lg">2</p>
-                <p className="text-gray-500">{exercise.name}</p>
+              <div className="border-2 border-gray-800/50 flex flex-col items-center justify-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
+                {/* <DocumentIcon className="size-18 text-blue-200" /> */}
+                <p className="text-white">{exercise.name}</p>
+                <p className="text-gray-500 font-mono italic">{exercise.members}</p>
               </div>
             ))}
-            <div className="relative flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
+            <div className="border-2 border-gray-800/50 flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
                 <DocumentIcon className="size-18 text-gray-500" />
                 <p className="absolute top-9 right-15 text-gray-800 text-2xl">+</p>
                 <p className="text-gray-500">Додати</p>
