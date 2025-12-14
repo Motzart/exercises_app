@@ -209,6 +209,201 @@ export async function getTodayDurationSeconds() {
   return totalSeconds;
 }
 
+export async function getThisWeekDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_this_week_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: client-side aggregation
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfWeekISO = startOfWeek.toISOString();
+
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+  const endOfWeekISO = endOfWeek.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfWeekISO)
+    .lte('created_at', endOfWeekISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get this week duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
+export async function getLastWeekDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_last_week_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: client-side aggregation
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const startOfCurrentWeek = new Date(now);
+  startOfCurrentWeek.setDate(
+    now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1),
+  );
+  startOfCurrentWeek.setHours(0, 0, 0, 0);
+
+  const startOfLastWeek = new Date(startOfCurrentWeek);
+  startOfLastWeek.setDate(startOfCurrentWeek.getDate() - 7);
+  const startOfLastWeekISO = startOfLastWeek.toISOString();
+
+  const endOfLastWeek = new Date(startOfCurrentWeek);
+  endOfLastWeek.setDate(startOfCurrentWeek.getDate() - 1);
+  endOfLastWeek.setHours(23, 59, 59, 999);
+  const endOfLastWeekISO = endOfLastWeek.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfLastWeekISO)
+    .lte('created_at', endOfLastWeekISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get last week duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
+export async function getThisMonthDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_this_month_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: client-side aggregation
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  startOfMonth.setHours(0, 0, 0, 0);
+  const startOfMonthISO = startOfMonth.toISOString();
+
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  endOfMonth.setHours(23, 59, 59, 999);
+  const endOfMonthISO = endOfMonth.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfMonthISO)
+    .lte('created_at', endOfMonthISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get this month duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
+export async function getLastMonthDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Use SQL aggregation SUM() on the database side via RPC function
+  const { data: rpcData, error: rpcError } = await supabaseClient.rpc(
+    'get_last_month_duration_seconds',
+    { p_user_id: userId },
+  );
+
+  // If RPC function exists and returned a result, use it
+  if (!rpcError && rpcData !== null && rpcData !== undefined) {
+    return rpcData;
+  }
+
+  // Fallback: client-side aggregation
+  const now = new Date();
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  startOfLastMonth.setHours(0, 0, 0, 0);
+  const startOfLastMonthISO = startOfLastMonth.toISOString();
+
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+  endOfLastMonth.setHours(23, 59, 59, 999);
+  const endOfLastMonthISO = endOfLastMonth.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfLastMonthISO)
+    .lte('created_at', endOfLastMonthISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get last month duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
 export async function getExercisesCount() {
   const userId = await getCurrentUserId();
 

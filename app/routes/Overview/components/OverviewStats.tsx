@@ -1,8 +1,10 @@
 import { ClockIcon } from '@heroicons/react/16/solid';
-import { useTotalDuration } from '~/hooks/useTotalDuration';
+import { useTotalDuration, usePeriodStats } from '~/hooks/useTotalDuration';
 
 const OverviewStats = () => {
   const { data: totalDuration, isLoading } = useTotalDuration();
+  const { data: periodStats, isLoading: isLoadingPeriodStats } =
+    usePeriodStats();
 
   // Parse "02h:38m" format to "02,38" format
   const formatDurationForDisplay = (
@@ -40,25 +42,69 @@ const OverviewStats = () => {
       </div>
       <div className="w-full">
         <ul className="grid grid-cols-2 gap-4">
-          <li className="bg-gray-800/50 rounded-lg p-4">
-            <span className="text-sm font-light text-white">Цього тижня</span>
-            <span className="text-xl font-bold text-white ml-2">00h:00m</span>
+          <li className="bg-gray-800/50 rounded-lg p-4 flex flex-col">
+            <div className="flex items-center">
+              <span className="text-sm font-light text-white">Цього тижня</span>
+              <span className="text-xl font-bold text-white ml-2">
+                {isLoadingPeriodStats
+                  ? '00h:00m'
+                  : periodStats?.thisWeek || '00h:00m'}
+              </span>
+            </div>
+            {periodStats?.thisWeekDate && (
+              <span className="text-xs text-gray-400 mt-1">
+                {periodStats.thisWeekDate}
+              </span>
+            )}
           </li>
-          <li className="bg-gray-800/50 rounded-lg p-4">
-            <span className="text-sm font-light text-white">
-              Минулого тижня
-            </span>
-            <span className="text-xl font-bold text-white ml-2">00h:00m</span>
+          <li className="bg-gray-800/50 rounded-lg p-4 flex flex-col">
+            <div className="flex items-center">
+              <span className="text-sm font-light text-white">
+                Минулого тижня
+              </span>
+              <span className="text-xl font-bold text-white ml-2">
+                {isLoadingPeriodStats
+                  ? '00h:00m'
+                  : periodStats?.lastWeek || '00h:00m'}
+              </span>
+            </div>
+            {periodStats?.lastWeekDate && (
+              <span className="text-xs text-gray-400 mt-1">
+                {periodStats.lastWeekDate}
+              </span>
+            )}
           </li>
-          <li className="bg-gray-800/50 rounded-lg p-4">
-            <span className="text-sm font-light text-white">Цього місяця</span>
-            <span className="text-xl font-bold text-white ml-2">00h:00m</span>
+          <li className="bg-gray-800/50 rounded-lg p-4 flex flex-col">
+            <div className="flex items-center">
+              <span className="text-sm font-light text-white">Цього місяця</span>
+              <span className="text-xl font-bold text-white ml-2">
+                {isLoadingPeriodStats
+                  ? '00h:00m'
+                  : periodStats?.thisMonth || '00h:00m'}
+              </span>
+            </div>
+            {periodStats?.thisMonthDate && (
+              <span className="text-xs text-gray-400 mt-1">
+                {periodStats.thisMonthDate}
+              </span>
+            )}
           </li>
-          <li className="bg-gray-800/50 rounded-lg p-4">
-            <span className="text-sm font-light text-white">
-              Минулого місяця
-            </span>
-            <span className="text-xl font-bold text-white ml-2">00h:00m</span>
+          <li className="bg-gray-800/50 rounded-lg p-4 flex flex-col">
+            <div className="flex items-center">
+              <span className="text-sm font-light text-white">
+                Минулого місяця
+              </span>
+              <span className="text-xl font-bold text-white ml-2">
+                {isLoadingPeriodStats
+                  ? '00h:00m'
+                  : periodStats?.lastMonth || '00h:00m'}
+              </span>
+            </div>
+            {periodStats?.lastMonthDate && (
+              <span className="text-xs text-gray-400 mt-1">
+                {periodStats.lastMonthDate}
+              </span>
+            )}
           </li>
         </ul>
       </div>

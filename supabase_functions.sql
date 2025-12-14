@@ -24,9 +24,93 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- SQL функция для получения длительности сессий пользователя за текущий тиждень (понедельник-воскресенье)
+CREATE OR REPLACE FUNCTION get_this_week_duration_seconds(p_user_id UUID)
+RETURNS INTEGER AS $$
+DECLARE
+  v_start_of_week TIMESTAMP WITH TIME ZONE;
+  v_end_of_week TIMESTAMP WITH TIME ZONE;
+BEGIN
+  -- Начало текущей недели (понедельник 00:00:00)
+  v_start_of_week := DATE_TRUNC('week', CURRENT_DATE AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
+  -- Конец текущей недели (воскресенье 23:59:59)
+  v_end_of_week := (DATE_TRUNC('week', CURRENT_DATE AT TIME ZONE 'UTC') + INTERVAL '6 days 23 hours 59 minutes 59 seconds') AT TIME ZONE 'UTC';
+  
+  RETURN COALESCE(SUM(duration_seconds), 0)::INTEGER
+  FROM sessions
+  WHERE user_id = p_user_id
+    AND created_at >= v_start_of_week
+    AND created_at <= v_end_of_week;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- SQL функция для получения длительности сессий пользователя за прошлый тиждень
+CREATE OR REPLACE FUNCTION get_last_week_duration_seconds(p_user_id UUID)
+RETURNS INTEGER AS $$
+DECLARE
+  v_start_of_last_week TIMESTAMP WITH TIME ZONE;
+  v_end_of_last_week TIMESTAMP WITH TIME ZONE;
+BEGIN
+  -- Начало прошлой недели (понедельник 00:00:00)
+  v_start_of_last_week := (DATE_TRUNC('week', CURRENT_DATE AT TIME ZONE 'UTC') - INTERVAL '7 days') AT TIME ZONE 'UTC';
+  -- Конец прошлой недели (воскресенье 23:59:59)
+  v_end_of_last_week := (DATE_TRUNC('week', CURRENT_DATE AT TIME ZONE 'UTC') - INTERVAL '1 day 23 hours 59 minutes 59 seconds') AT TIME ZONE 'UTC';
+  
+  RETURN COALESCE(SUM(duration_seconds), 0)::INTEGER
+  FROM sessions
+  WHERE user_id = p_user_id
+    AND created_at >= v_start_of_last_week
+    AND created_at <= v_end_of_last_week;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- SQL функция для получения длительности сессий пользователя за текущий месяц
+CREATE OR REPLACE FUNCTION get_this_month_duration_seconds(p_user_id UUID)
+RETURNS INTEGER AS $$
+DECLARE
+  v_start_of_month TIMESTAMP WITH TIME ZONE;
+  v_end_of_month TIMESTAMP WITH TIME ZONE;
+BEGIN
+  -- Начало текущего месяца (первый день 00:00:00)
+  v_start_of_month := DATE_TRUNC('month', CURRENT_DATE AT TIME ZONE 'UTC') AT TIME ZONE 'UTC';
+  -- Конец текущего месяца (последний день 23:59:59)
+  v_end_of_month := (DATE_TRUNC('month', CURRENT_DATE AT TIME ZONE 'UTC') + INTERVAL '1 month' - INTERVAL '1 second') AT TIME ZONE 'UTC';
+  
+  RETURN COALESCE(SUM(duration_seconds), 0)::INTEGER
+  FROM sessions
+  WHERE user_id = p_user_id
+    AND created_at >= v_start_of_month
+    AND created_at <= v_end_of_month;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- SQL функция для получения длительности сессий пользователя за прошлый месяц
+CREATE OR REPLACE FUNCTION get_last_month_duration_seconds(p_user_id UUID)
+RETURNS INTEGER AS $$
+DECLARE
+  v_start_of_last_month TIMESTAMP WITH TIME ZONE;
+  v_end_of_last_month TIMESTAMP WITH TIME ZONE;
+BEGIN
+  -- Начало прошлого месяца (первый день 00:00:00)
+  v_start_of_last_month := DATE_TRUNC('month', CURRENT_DATE AT TIME ZONE 'UTC' - INTERVAL '1 month') AT TIME ZONE 'UTC';
+  -- Конец прошлого месяца (последний день 23:59:59)
+  v_end_of_last_month := (DATE_TRUNC('month', CURRENT_DATE AT TIME ZONE 'UTC') - INTERVAL '1 second') AT TIME ZONE 'UTC';
+  
+  RETURN COALESCE(SUM(duration_seconds), 0)::INTEGER
+  FROM sessions
+  WHERE user_id = p_user_id
+    AND created_at >= v_start_of_last_month
+    AND created_at <= v_end_of_last_month;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Предоставляем права на выполнение функций для аутентифицированных пользователей
 GRANT EXECUTE ON FUNCTION get_total_duration_seconds(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION get_today_duration_seconds(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_this_week_duration_seconds(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_last_week_duration_seconds(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_this_month_duration_seconds(UUID) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_last_month_duration_seconds(UUID) TO authenticated;
 
 -- Создание таблицы notes для хранения заметок пользователей
 -- Выполните этот запрос в Supabase SQL Editor для создания таблицы
