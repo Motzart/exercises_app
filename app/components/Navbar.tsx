@@ -95,21 +95,21 @@ const Navbar = () => {
                 <button
                   type="button"
                   onClick={handleAddExercise}
-                  className="relative inline-flex items-center gap-x-1.5 rounded-md bg-indigo-500 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer"
+                  className="relative inline-flex items-center gap-x-1.5 rounded-md bg-green-800 px-3 py-2 text-sm font-semibold text-white hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer"
                 >
                   <PlusIcon aria-hidden="true" className="-ml-0.5 size-5" />
                   Додати вправу
                 </button>
               </div>
               <div className="hidden md:ml-4 md:flex md:shrink-0 md:items-center">
-                <button
+                {/* <button
                   type="button"
                   className="relative rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
                   <BellIcon aria-hidden="true" className="size-6" />
-                </button>
+                </button> */}
 
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
@@ -198,14 +198,14 @@ const Navbar = () => {
                 {user_metadata?.email}
               </div>
             </div>
-            <button
+            {/* <button
               type="button"
               className="relative ml-auto shrink-0 rounded-full p-1 text-gray-400 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500"
             >
               <span className="absolute -inset-1.5" />
               <span className="sr-only">View notifications</span>
               <BellIcon aria-hidden="true" className="size-6" />
-            </button>
+            </button> */}
           </div>
           <div className="mt-3 space-y-1">
             <DisclosureButton

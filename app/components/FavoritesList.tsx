@@ -51,7 +51,7 @@ const FavoritesList = () => {
     return (
       <div>
         <div className="flex items-center gap-x-2">
-          <h2 className="text-lg font-light uppercase">Улюблені:</h2>
+          <h2 className="text-lg font-light uppercase">Вибрані вправи:</h2>
         </div>
         <div className="mt-3 rounded-md border border-white/10 bg-gray-800/30 p-4">
           <p className="text-sm text-gray-400">
@@ -80,7 +80,7 @@ const FavoritesList = () => {
     return (
       <div>
         <div className="flex items-center gap-x-2">
-          <h2 className="text-lg font-light uppercase">Улюблені:</h2>
+          <h2 className="text-lg font-light">Улюблені:</h2>
         </div>
         <p className="mt-3 text-gray-400">Завантаження...</p>
       </div>
@@ -91,7 +91,7 @@ const FavoritesList = () => {
     return (
       <div>
         <div className="flex items-center gap-x-2">
-          <h2 className="text-lg font-light uppercase">Улюблені:</h2>
+          <h2 className="text-lg font-light ">Улюблені:</h2>
         </div>
         <EmptyState
           title="Поки що немає улюблених"
@@ -105,7 +105,7 @@ const FavoritesList = () => {
   return (
     <div>
       <div className="flex items-center gap-x-2">
-        <h2 className="text-lg font-light uppercase">Улюблені:</h2>
+        <h2 className="text-lg font-light">Улюблені:</h2>
       </div>
 
       <ul

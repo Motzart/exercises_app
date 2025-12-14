@@ -26,7 +26,7 @@ export default function Card({
       >
         <div
           className={
-            'bg-green-500 flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white'
+            'bg-green-800 flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white'
           }
         >
           <MusicalNoteIcon className="size-6 text-white" />

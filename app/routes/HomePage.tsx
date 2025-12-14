@@ -14,6 +14,7 @@ import Devider from '~/components/Devider';
 import { Link } from 'react-router';
 import FavoritesList from '~/components/FavoritesList';
 import HomeStatsBlock from '~/components/HomeStatsBlock';
+import PlayLists from '~/components/PlayLists';
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Practice Journal' }, { name: 'description' }];
@@ -101,27 +102,7 @@ export default function HomePage() {
           </dl>
         </div>
         <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">
-          <div className="flex items-center gap-x-2">
-            <h2 className="text-lg font-light">Недавні списки:</h2>
-          </div>
-
-          <ul
-            role="list"
-            className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-8"
-          >
-            {itemsPlayList.map((exercise) => (
-              <div className="border-2 border-gray-800/50 flex flex-col items-center justify-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
-                {/* <DocumentIcon className="size-18 text-blue-200" /> */}
-                <p className="text-white">{exercise.name}</p>
-                <p className="text-gray-500 font-mono italic">{exercise.members}</p>
-              </div>
-            ))}
-            <div className="border-2 border-gray-800/50 flex flex-col items-center gap-x-2 cursor-pointer hover:bg-gray-800/50 rounded-lg p-4">
-                <DocumentIcon className="size-18 text-gray-500" />
-                <p className="absolute top-9 right-15 text-gray-800 text-2xl">+</p>
-                <p className="text-gray-500">Додати</p>
-              </div>
-          </ul>
+          <PlayLists />
         </div>
 
         <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">
