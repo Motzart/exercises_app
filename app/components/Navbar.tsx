@@ -46,7 +46,7 @@ const Navbar = () => {
   }
 
   return (
-    <Disclosure as="nav" className="fixed top-0 left-0 right-0 z-50 bg-gray-800/50 backdrop-blur-sm">
+    <Disclosure as="nav" className="fixed top-0 left-0 right-0 w-full z-50 bg-gray-800/50 backdrop-blur-sm" style={{ WebkitBackdropFilter: 'blur(4px)' }}>
       <div className="container mx-auto  px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
