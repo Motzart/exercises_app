@@ -159,3 +159,41 @@ CREATE POLICY "Users can update their own exercises"
 CREATE POLICY "Users can delete their own exercises"
   ON exercises FOR DELETE
   USING (auth.uid() = user_id);
+
+-- Создание таблицы playlists для хранения плейлистов пользователей
+-- Выполните этот запрос в Supabase SQL Editor для создания таблицы
+CREATE TABLE IF NOT EXISTS playlists (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  exercise_ids UUID[] DEFAULT '{}' NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Создание индексов для оптимизации запросов
+CREATE INDEX IF NOT EXISTS playlists_user_id_idx ON playlists(user_id);
+CREATE INDEX IF NOT EXISTS playlists_created_at_idx ON playlists(created_at DESC);
+CREATE INDEX IF NOT EXISTS playlists_exercise_ids_idx ON playlists USING GIN(exercise_ids);
+
+-- Включение Row Level Security (RLS)
+ALTER TABLE playlists ENABLE ROW LEVEL SECURITY;
+
+-- Политика безопасности: пользователи могут видеть только свои плейлисты
+CREATE POLICY "Users can view their own playlists"
+  ON playlists FOR SELECT
+  USING (auth.uid() = user_id);
+
+-- Политика безопасности: пользователи могут создавать свои плейлисты
+CREATE POLICY "Users can create their own playlists"
+  ON playlists FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Политика безопасности: пользователи могут обновлять свои плейлисты
+CREATE POLICY "Users can update their own playlists"
+  ON playlists FOR UPDATE
+  USING (auth.uid() = user_id);
+
+-- Политика безопасности: пользователи могут удалять свои плейлисты
+CREATE POLICY "Users can delete their own playlists"
+  ON playlists FOR DELETE
+  USING (auth.uid() = user_id);

@@ -46,7 +46,11 @@ const Navbar = () => {
   }
 
   return (
-    <Disclosure as="nav" className="fixed top-0 left-0 right-0 w-full z-50 bg-gray-800/50 backdrop-blur-sm" style={{ WebkitBackdropFilter: 'blur(4px)' }}>
+    <Disclosure
+      as="nav"
+      className="fixed top-0 left-0 right-0 w-full z-50 bg-gray-800/50 backdrop-blur-sm"
+      style={{ WebkitBackdropFilter: 'blur(4px)' }}
+    >
       <div className="container mx-auto  px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <div className="flex">
@@ -66,7 +70,9 @@ const Navbar = () => {
               </DisclosureButton>
             </div>
             <div className="flex shrink-0 items-center text-2xl font-light">
-              <Link to="/" className='text-blue-200 cursor-pointer font-mono'>Нотатник</Link>
+              <Link to="/" className="text-blue-200 cursor-pointer font-mono">
+                Нотатник
+              </Link>
             </div>
             <div className="hidden md:ml-6 md:flex md:flex-1 md:justify-center">
               {navigation.map((item, itemIdx) => {

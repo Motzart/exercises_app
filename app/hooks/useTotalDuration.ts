@@ -72,23 +72,23 @@ function getWeekDates(): {
 } {
   const now = new Date();
   const dayOfWeek = now.getDay();
-  
+
   // Початок поточного тижня (понеділок)
   const startOfThisWeek = new Date(now);
   startOfThisWeek.setDate(
     now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1),
   );
   startOfThisWeek.setHours(0, 0, 0, 0);
-  
+
   // Кінець поточного тижня (неділя)
   const endOfThisWeek = new Date(startOfThisWeek);
   endOfThisWeek.setDate(startOfThisWeek.getDate() + 6);
   endOfThisWeek.setHours(23, 59, 59, 999);
-  
+
   // Початок минулого тижня
   const startOfLastWeek = new Date(startOfThisWeek);
   startOfLastWeek.setDate(startOfThisWeek.getDate() - 7);
-  
+
   // Кінець минулого тижня
   const endOfLastWeek = new Date(startOfThisWeek);
   endOfLastWeek.setDate(startOfThisWeek.getDate() - 1);
@@ -105,17 +105,17 @@ function getMonthDates(): {
   lastMonth: { start: Date; end: Date };
 } {
   const now = new Date();
-  
+
   // Початок поточного місяця
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  
+
   // Кінець поточного місяця
   const endOfThisMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   endOfThisMonth.setHours(23, 59, 59, 999);
-  
+
   // Початок минулого місяця
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  
+
   // Кінець минулого місяця
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
   endOfLastMonth.setHours(23, 59, 59, 999);

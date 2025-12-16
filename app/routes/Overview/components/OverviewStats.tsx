@@ -76,7 +76,9 @@ const OverviewStats = () => {
           </li>
           <li className="bg-gray-800/50 rounded-lg p-4 flex flex-col">
             <div className="flex items-center">
-              <span className="text-sm font-light text-white">Цього місяця</span>
+              <span className="text-sm font-light text-white">
+                Цього місяця
+              </span>
               <span className="text-xl font-bold text-white ml-2">
                 {isLoadingPeriodStats
                   ? '00h:00m'

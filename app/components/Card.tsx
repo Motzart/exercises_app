@@ -37,8 +37,9 @@ export default function Card({
               {exercise.name}
             </div>
             <p className="text-gray-500 italic flex flex-row gap-2 items-center">
-              <ClockIcon className="size-4 text-gray-500" /> {' '}
-              {formatDuration(exercise.lastSession?.duration_seconds ?? 0)}</p>
+              <ClockIcon className="size-4 text-gray-500" />{' '}
+              {formatDuration(exercise.lastSession?.duration_seconds ?? 0)}
+            </p>
           </div>
           <div className="shrink-0 pr-2">
             <button

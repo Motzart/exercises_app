@@ -51,3 +51,8 @@ export interface Note {
 }
 
 export type CreateNoteInput = Omit<Note, 'id' | 'created_at' | 'user_id'>;
+
+export interface Item {
+  id: string;
+  name: string;
+}

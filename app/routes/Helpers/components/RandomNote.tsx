@@ -1,29 +1,29 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
-const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+const NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 
 function getRandomNote() {
-  return NOTES[Math.floor(Math.random() * NOTES.length)]
+  return NOTES[Math.floor(Math.random() * NOTES.length)];
 }
 
 function RandomNote() {
-  const [currentNote, setCurrentNote] = useState(() => getRandomNote())
+  const [currentNote, setCurrentNote] = useState(() => getRandomNote());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentNote(getRandomNote())
-    }, 2000)
+      setCurrentNote(getRandomNote());
+    }, 2000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   function handleClick() {
-    setCurrentNote(getRandomNote())
+    setCurrentNote(getRandomNote());
   }
 
   return (
     <div className="container mx-auto relative isolate overflow-hidden pt-16">
-      <div 
+      <div
         className="flex items-center justify-center min-h-[calc(100vh-8rem)] cursor-pointer"
         onClick={handleClick}
       >
@@ -32,7 +32,7 @@ function RandomNote() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default RandomNote
+export default RandomNote;

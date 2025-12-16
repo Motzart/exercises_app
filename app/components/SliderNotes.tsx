@@ -1,71 +1,71 @@
-import { useRef, useState } from 'react'
-import Slider from 'react-slick'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
-import { DocumentIcon, TrashIcon } from '@heroicons/react/16/solid'
-import { useNotes, useCreateNote, useDeleteNote } from '~/hooks/useNotes'
-import type { Note } from '~/types/exercise'
+import { useRef, useState } from 'react';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import { DocumentIcon, TrashIcon } from '@heroicons/react/16/solid';
+import { useNotes, useCreateNote, useDeleteNote } from '~/hooks/useNotes';
+import type { Note } from '~/types/exercise';
 
 interface SliderNotesProps {
-  exerciseId?: string | null
+  exerciseId?: string | null;
 }
 
 function SliderNotes({ exerciseId = null }: SliderNotesProps) {
-  const sliderRef = useRef<Slider>(null)
-  const { data: notes = [], isLoading } = useNotes(exerciseId)
-  const createNoteMutation = useCreateNote()
-  const deleteNoteMutation = useDeleteNote(exerciseId)
-  const [noteContent, setNoteContent] = useState('')
-  const [currentSlide, setCurrentSlide] = useState(0)
+  const sliderRef = useRef<Slider>(null);
+  const { data: notes = [], isLoading } = useNotes(exerciseId);
+  const createNoteMutation = useCreateNote();
+  const deleteNoteMutation = useDeleteNote(exerciseId);
+  const [noteContent, setNoteContent] = useState('');
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const next = () => {
-    sliderRef.current?.slickNext()
-  }
+    sliderRef.current?.slickNext();
+  };
 
   const previous = () => {
-    sliderRef.current?.slickPrev()
-  }
+    sliderRef.current?.slickPrev();
+  };
 
   const handleSaveNote = async () => {
-    if (!noteContent.trim()) return
+    if (!noteContent.trim()) return;
 
     try {
       await createNoteMutation.mutateAsync({
         content: noteContent.trim(),
         exercise_id: exerciseId,
-      })
-      setNoteContent('')
+      });
+      setNoteContent('');
       // Перейти к первому слайду с заметками после сохранения
       if (notes.length > 0) {
         setTimeout(() => {
-          sliderRef.current?.slickGoTo(1)
-        }, 100)
+          sliderRef.current?.slickGoTo(1);
+        }, 100);
       }
     } catch (error) {
-      console.error('Failed to create note:', error)
+      console.error('Failed to create note:', error);
     }
-  }
+  };
 
   const handleDeleteNote = async (noteId: string) => {
-    if (!confirm('Ви впевнені, що хочете видалити цю нотатку?')) return
+    if (!confirm('Ви впевнені, що хочете видалити цю нотатку?')) return;
 
     try {
-      await deleteNoteMutation.mutateAsync(noteId)
+      await deleteNoteMutation.mutateAsync(noteId);
       // Якщо видаляємо останню нотатку, перейти на перший слайд
       if (notes.length === 1) {
         setTimeout(() => {
-          sliderRef.current?.slickGoTo(0)
-        }, 100)
+          sliderRef.current?.slickGoTo(0);
+        }, 100);
       } else if (currentSlide > 0 && currentSlide >= notes.length) {
         // Якщо видаляємо останню нотатку в списку, перейти на попередню
         setTimeout(() => {
-          sliderRef.current?.slickGoTo(currentSlide - 1)
-        }, 100)
+          sliderRef.current?.slickGoTo(currentSlide - 1);
+        }, 100);
       }
     } catch (error) {
-      console.error('Failed to delete note:', error)
+      console.error('Failed to delete note:', error);
     }
-  }
+  };
 
   const settings = {
     dots: false,
@@ -75,31 +75,31 @@ function SliderNotes({ exerciseId = null }: SliderNotesProps) {
     slidesToScroll: 1,
     arrows: false,
     beforeChange: (current: number, next: number) => {
-      setCurrentSlide(next)
+      setCurrentSlide(next);
     },
-  }
+  };
 
   // Первый слайд - форма для ввода, остальные - существующие заметки
-  const totalSlides = 1 + notes.length
+  const totalSlides = 1 + notes.length;
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
 
     if (date.toDateString() === today.toDateString()) {
-      return 'Сьогодні'
+      return 'Сьогодні';
     }
     if (date.toDateString() === yesterday.toDateString()) {
-      return 'Вчора'
+      return 'Вчора';
     }
     return date.toLocaleDateString('uk-UA', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
-    })
-  }
+    });
+  };
 
   return (
     <div className="slider-container mt-8">
@@ -115,7 +115,7 @@ function SliderNotes({ exerciseId = null }: SliderNotesProps) {
           ) : (
             notes.map((_, index) => {
               // currentSlide 0 is the input form, so note index is currentSlide - 1
-              const isActive = currentSlide === index + 1
+              const isActive = currentSlide === index + 1;
               return (
                 <DocumentIcon
                   key={index}
@@ -123,7 +123,7 @@ function SliderNotes({ exerciseId = null }: SliderNotesProps) {
                     isActive ? 'text-white' : 'text-gray-500'
                   }`}
                 />
-              )
+              );
             })
           )}
         </div>
@@ -232,7 +232,7 @@ function SliderNotes({ exerciseId = null }: SliderNotesProps) {
         </Slider>
       )}
     </div>
-  )
+  );
 }
 
-export default SliderNotes
+export default SliderNotes;

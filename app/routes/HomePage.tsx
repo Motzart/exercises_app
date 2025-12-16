@@ -47,36 +47,6 @@ const SecondaryNavigation = [
   { name: 'Вправи', stat: '58.16%', href: '/exercises' },
   { name: 'Списки вправ', stat: '71,897', href: '/play-lists' },
 ];
-const itemsPlayList = [
-  {
-    name: 'Warming Up',
-    initials: 'GA',
-    href: '#',
-    members: 4,
-    bgColor: 'bg-pink-700',
-  },
-  {
-    name: 'Єтюд Бертіні',
-    initials: 'GA',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-pink-700',
-  },
-  {
-    name: 'Ганон 7,8,9',
-    initials: 'GA',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-pink-700',
-  },
-  {
-    name: 'Play List 2',
-    initials: 'CD',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-purple-700',
-  },
-];
 
 export default function HomePage() {
   return (

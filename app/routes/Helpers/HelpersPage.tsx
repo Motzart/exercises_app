@@ -1,4 +1,4 @@
-import RandomNote from "./components/RandomNote";
+import RandomNote from './components/RandomNote';
 
 const HelpersPage = () => {
   return (

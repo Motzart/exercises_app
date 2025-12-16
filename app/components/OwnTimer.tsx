@@ -143,8 +143,13 @@ const OwnTimer = ({
             )}
           </button>
           <button
-            className="bg-green-700 text-white w-32 h-32 rounded-full flex items-center justify-center hover:bg-green-500 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] active:shadow-md active:translate-y-0.5"
+            className={`bg-green-700 text-white w-32 h-32 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ${
+              createSessionMutation.isPending
+                ? 'opacity-50 cursor-not-allowed'
+                : 'hover:bg-green-500 cursor-pointer hover:shadow-xl active:scale-[0.98] active:shadow-md active:translate-y-0.5'
+            }`}
             onClick={handleStop}
+            disabled={createSessionMutation.isPending}
           >
             <div className="flex flex-col items-center justify-center">
               <CheckIcon className="size-12" />

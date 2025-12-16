@@ -98,6 +98,65 @@ export async function getExercises(filters?: { favorite?: boolean }) {
   return { data: processedData, error: null };
 }
 
+export async function getExercisesByIds(exerciseIds: string[]) {
+  if (!exerciseIds || exerciseIds.length === 0) {
+    return { data: [], error: null };
+  }
+
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('exercises')
+    .select(
+      `
+      *,
+      sessions!left(
+        id,
+        created_at,
+        started_at,
+        ended_at,
+        duration_seconds
+      )
+    `,
+    )
+    .eq('user_id', userId)
+    .in('id', exerciseIds)
+    .order('created_at', { foreignTable: 'sessions', ascending: false })
+    .limit(1, { foreignTable: 'sessions' });
+
+  if (error) {
+    return { data: null, error };
+  }
+
+  // Сохраняем порядок из exerciseIds
+  const exerciseMap = new Map(
+    data?.map((exercise) => {
+      const sessions = exercise.sessions as Array<Session> | Session | null;
+      let lastSession: Session | null = null;
+      if (Array.isArray(sessions)) {
+        lastSession = sessions.length > 0 ? sessions[0] : null;
+      } else if (sessions && typeof sessions === 'object') {
+        lastSession = sessions as Session;
+      }
+
+      const { sessions: _, ...exerciseWithoutSessions } = exercise;
+      return [
+        exercise.id,
+        {
+          ...exerciseWithoutSessions,
+          lastSession,
+        } as Exercise,
+      ];
+    }) || [],
+  );
+
+  const processedData = exerciseIds
+    .map((id) => exerciseMap.get(id))
+    .filter((exercise): exercise is Exercise => exercise !== undefined);
+
+  return { data: processedData, error: null };
+}
+
 export async function setFavoriteItem(exerciseId: string, isFavorite: boolean) {
   const userId = await getCurrentUserId();
 
@@ -705,4 +764,78 @@ export async function updateExercise(
   }
 
   return data as Exercise;
+}
+
+export interface CreatePlaylistInput {
+  name: string;
+  exercise_ids: string[];
+}
+
+export interface Playlist {
+  id: string;
+  name: string;
+  user_id: string;
+  exercise_ids: string[];
+  created_at: string;
+}
+
+export interface PlaylistWithCount extends Playlist {
+  exercise_count: number;
+}
+
+export async function createPlaylist(playlist: CreatePlaylistInput) {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('playlists')
+    .insert({
+      name: playlist.name,
+      exercise_ids: playlist.exercise_ids,
+      user_id: userId,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to create playlist');
+  }
+
+  return data;
+}
+
+export async function getPlaylists() {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('playlists')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get playlists');
+  }
+
+  // Calculate exercise count for each playlist
+  const playlistsWithCount: PlaylistWithCount[] =
+    data?.map((playlist) => ({
+      ...playlist,
+      exercise_count: playlist.exercise_ids?.length || 0,
+    })) || [];
+
+  return playlistsWithCount;
+}
+
+export async function deletePlaylist(playlistId: string) {
+  const userId = await getCurrentUserId();
+
+  const { error } = await supabaseClient
+    .from('playlists')
+    .delete()
+    .eq('id', playlistId)
+    .eq('user_id', userId);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to delete playlist');
+  }
 }

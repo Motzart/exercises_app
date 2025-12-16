@@ -1,11 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createExercise,
+  createPlaylist,
   deleteExercise,
+  deletePlaylist,
   getExercises,
+  getExercisesByIds,
+  getPlaylists,
   getSessionsByDay,
   setFavoriteItem,
   updateExercise,
+  type CreatePlaylistInput,
 } from '~/services/superbaseDb';
 import type {
   CreateExerciseInput,
@@ -134,5 +139,56 @@ export function useUpdateExercise() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });
     },
+  });
+}
+
+export function useCreatePlaylist() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (playlist: CreatePlaylistInput) => createPlaylist(playlist),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['playlists'] });
+    },
+  });
+}
+
+export function usePlaylists() {
+  return useQuery({
+    queryKey: ['playlists'],
+    queryFn: async () => {
+      return await getPlaylists();
+    },
+    placeholderData: (previousData) => previousData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useDeletePlaylist() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (playlistId: string) => deletePlaylist(playlistId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['playlists'] });
+    },
+  });
+}
+
+export function useExercisesByIds(exerciseIds: string[]) {
+  return useQuery({
+    queryKey: ['exercises', 'byIds', exerciseIds],
+    queryFn: async () => {
+      const { data, error } = await getExercisesByIds(exerciseIds);
+
+      if (error) {
+        throw new Error(error.message || 'Failed to fetch exercises');
+      }
+
+      return data as Exercise[];
+    },
+    enabled: exerciseIds.length > 0,
+    placeholderData: (previousData) => previousData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

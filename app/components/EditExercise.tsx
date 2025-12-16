@@ -1,21 +1,21 @@
-import { Formik } from 'formik'
-import Devider from './Devider'
+import { Formik } from 'formik';
+import Devider from './Devider';
 
-import * as Yup from 'yup'
-import { useModal } from '~/hooks/useModal'
-import { useUpdateExercise } from '~/hooks/useExercises'
-import type { Exercise } from '~/types/exercise'
+import * as Yup from 'yup';
+import { useModal } from '~/hooks/useModal';
+import { useUpdateExercise } from '~/hooks/useExercises';
+import type { Exercise } from '~/types/exercise';
 
 const ExerciseSchema = Yup.object().shape({
   name: Yup.string()
     .min(4, 'description is too short!')
     .max(160, 'description is too long!')
     .required('required'),
-})
+});
 
 function EditExercise({ exercise }: { exercise: Exercise }) {
-  const { closeAllModals } = useModal()
-  const updateExerciseMutation = useUpdateExercise()
+  const { closeAllModals } = useModal();
+  const updateExerciseMutation = useUpdateExercise();
 
   const handleSubmitButton = async (values: any) => {
     try {
@@ -24,12 +24,12 @@ function EditExercise({ exercise }: { exercise: Exercise }) {
         updates: {
           name: values.name,
         },
-      })
-      closeAllModals()
+      });
+      closeAllModals();
     } catch (error) {
-      console.error('Error updating exercise:', error)
+      console.error('Error updating exercise:', error);
     }
-  }
+  };
 
   return (
     <div className="p-6">
@@ -97,11 +97,11 @@ function EditExercise({ exercise }: { exercise: Exercise }) {
                 </button>
               </div>
             </form>
-          )
+          );
         }}
       </Formik>
     </div>
-  )
+  );
 }
 
-export default EditExercise
+export default EditExercise;

@@ -2,39 +2,11 @@ import { useContext } from 'react';
 import { Link } from 'react-router';
 import { DocumentIcon, ListBulletIcon } from '@heroicons/react/20/solid';
 import { useModal } from '~/hooks/useModal';
+import { usePlaylists } from '~/hooks/useExercises';
 import EmptyState from './EmptyState';
+import PlaylistTimer from './PlaylistTimer';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
-
-const itemsPlayList = [
-  {
-    name: 'Warming Up',
-    initials: 'GA',
-    href: '#',
-    members: 4,
-    bgColor: 'bg-purple-700',
-  },
-  {
-    name: 'Єтюд Бертіні',
-    initials: 'GA',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-purple-700',
-  },
-  {
-    name: 'Ганон 7,8,9',
-    initials: 'GA',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-purple-700',
-  },
-  {
-    name: 'Play List 2',
-    initials: 'CD',
-    href: '#',
-    members: 3,
-    bgColor: 'bg-purple-700',
-  },
-];
+import type { PlaylistWithCount } from '~/services/superbaseDb';
 
 const PlaceholderCard = () => {
   return (
@@ -57,27 +29,17 @@ const PlaceholderCard = () => {
   );
 };
 
-interface PlayListItem {
-  name: string;
-  initials: string;
-  href: string;
-  members: number;
-  bgColor: string;
-}
-
 const PlayListCard = ({
   playlist,
   handleClick,
 }: {
-  playlist: PlayListItem;
+  playlist: PlaylistWithCount;
   handleClick: () => void;
 }) => {
   return (
     <div onClick={handleClick} className="cursor-pointer">
       <li className="col-span-1 flex rounded-md hover:bg-gray-800/50 shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] active:shadow-md active:translate-y-0.5">
-        <div
-          className={`${playlist.bgColor} flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white`}
-        >
+        <div className="bg-purple-700 flex w-16 shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white">
           <ListBulletIcon className="size-6 text-white" />
         </div>
         <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-t border-r border-b border-white/10 bg-gray-800/50">
@@ -86,7 +48,8 @@ const PlayListCard = ({
               {playlist.name}
             </div>
             <p className="text-gray-500 italic">
-              {playlist.members} {playlist.members === 1 ? 'вправа' : 'вправ'}
+              {playlist.exercise_count}{' '}
+              {playlist.exercise_count === 1 ? 'вправа' : 'вправ'}
             </p>
           </div>
           <div className="shrink-0 pr-2">
@@ -107,10 +70,15 @@ const PlayListCard = ({
 const PlayLists = () => {
   const { openModal } = useModal();
   const { user, isAuthenticating } = useContext(SupabaseAuthContext);
+  const { data: playlists = [], isLoading } = usePlaylists();
 
-  const handleClickPlayList = (playlist: PlayListItem) => {
-    // TODO: Implement modal for playlist
-    console.log('Open playlist:', playlist);
+  const handleClickPlayList = (playlist: PlaylistWithCount) => {
+    if (!playlist.exercise_ids || playlist.exercise_ids.length === 0) {
+      return;
+    }
+    openModal('fullwindow', <PlaylistTimer playlist={playlist} />, {
+      item: { name: playlist.name, id: playlist.id },
+    });
   };
 
   const isAuthenticated = user !== null && user !== undefined;
@@ -145,7 +113,25 @@ const PlayLists = () => {
     );
   }
 
-  if (!itemsPlayList || itemsPlayList.length === 0) {
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center gap-x-2">
+          <h2 className="text-lg font-light">Списки вправ:</h2>
+        </div>
+        <ul
+          role="list"
+          className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
+        >
+          {Array.from({ length: 4 }).map((_, index) => (
+            <PlaceholderCard key={`placeholder-${index}`} />
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  if (!playlists || playlists.length === 0) {
     return (
       <div>
         <div className="flex items-center gap-x-2">
@@ -170,10 +156,10 @@ const PlayLists = () => {
         role="list"
         className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
       >
-        {itemsPlayList.map((playlist, index) => (
+        {playlists.map((playlist) => (
           <PlayListCard
             handleClick={() => handleClickPlayList(playlist)}
-            key={`playlist-${index}`}
+            key={playlist.id}
             playlist={playlist}
           />
         ))}
@@ -183,4 +169,3 @@ const PlayLists = () => {
 };
 
 export default PlayLists;
-
