@@ -674,6 +674,58 @@ export async function getSessionsByDay(): Promise<DaySessions[]> {
   return days;
 }
 
+export async function getSessionsByDayOfWeek(): Promise<number[]> {
+  const userId = await getCurrentUserId();
+
+  // Get start of current week (Monday)
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
+  startOfWeek.setHours(0, 0, 0, 0);
+  const startOfWeekISO = startOfWeek.toISOString();
+
+  // Get end of current week (Sunday)
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 6);
+  endOfWeek.setHours(23, 59, 59, 999);
+  const endOfWeekISO = endOfWeek.toISOString();
+
+  // Get sessions only for current week
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select('created_at, duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfWeekISO)
+    .lte('created_at', endOfWeekISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get sessions by day of week');
+  }
+
+  // Initialize array for 7 days (Monday-Sunday)
+  // Index 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
+  const dayTotals = [0, 0, 0, 0, 0, 0, 0];
+
+  if (!sessions || sessions.length === 0) {
+    return dayTotals;
+  }
+
+  sessions.forEach((session: any) => {
+    const sessionDate = new Date(session.created_at);
+    const dayOfWeek = sessionDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    const durationSeconds = session.duration_seconds || 0;
+
+    // Convert to Monday-Sunday index (0 = Monday, 6 = Sunday)
+    // Sunday (0) becomes 6, Monday (1) becomes 0, etc.
+    const mondayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+    dayTotals[mondayIndex] += durationSeconds;
+  });
+
+  return dayTotals;
+}
+
 export async function createNote(note: CreateNoteInput) {
   const userId = await getCurrentUserId();
 

@@ -11,6 +11,7 @@ export function useCreateSession() {
       queryClient.invalidateQueries({ queryKey: ['totalDuration'] });
       queryClient.invalidateQueries({ queryKey: ['todayDuration'] });
       queryClient.invalidateQueries({ queryKey: ['sessionsByDay'] });
+      queryClient.invalidateQueries({ queryKey: ['sessionsByDayOfWeek'] });
     },
   });
 }

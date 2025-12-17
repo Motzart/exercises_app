@@ -9,6 +9,7 @@ import {
   getLastWeekDurationSeconds,
   getThisMonthDurationSeconds,
   getLastMonthDurationSeconds,
+  getSessionsByDayOfWeek,
   type ExerciseWeekStats,
 } from '~/services/superbaseDb';
 
@@ -49,6 +50,16 @@ export function useExercisesWeekStats() {
     queryKey: ['exercisesWeekStats'],
     queryFn: async () => {
       return await getExercisesWeekStats();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useSessionsByDayOfWeek() {
+  return useQuery<number[]>({
+    queryKey: ['sessionsByDayOfWeek'],
+    queryFn: async () => {
+      return await getSessionsByDayOfWeek();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

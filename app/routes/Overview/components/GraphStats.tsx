@@ -8,7 +8,7 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
+import { useSessionsByDayOfWeek } from '~/hooks/useTotalDuration';
 
 ChartJS.register(
   CategoryScale,
@@ -19,7 +19,9 @@ ChartJS.register(
   Legend,
 );
 
-export const options = {
+const labels = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'Пятниця', 'Субота', 'Неділя'];
+
+const options = {
   responsive: true,
   plugins: {
     legend: {
@@ -27,31 +29,63 @@ export const options = {
     },
     title: {
       display: true,
-      text: 'Chart.js Bar Chart',
+      text: 'Тиждень робочих сесій',
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context: any) {
+          const seconds = context.parsed.y;
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+          const remainingMinutes = minutes % 60;
+          
+          if (hours > 0) {
+            return `${hours}г ${remainingMinutes}хв`;
+          }
+          return `${minutes}хв`;
+        },
+      },
+    },
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        callback: function (value: any) {
+          const seconds = value;
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+          const remainingMinutes = minutes % 60;
+          
+          if (hours > 0) {
+            return `${hours}г ${remainingMinutes}хв`;
+          }
+          return `${minutes}хв`;
+        },
+      },
     },
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
-
 const GraphStats = () => {
-  return <Bar options={options} data={data} />;
+  const { data: sessionsData, isLoading } = useSessionsByDayOfWeek();
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: 'робочі сесії',
+        data: sessionsData || [0, 0, 0, 0, 0, 0, 0],
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
+
+  if (isLoading) {
+    return <div className="text-center py-8">Завантаження...</div>;
+  }
+
+  return <Bar options={options} data={chartData} />;
 };
 
 export default GraphStats;

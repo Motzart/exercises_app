@@ -7,7 +7,7 @@ const OverviewPage = () => {
     <div className="container mx-auto relative isolate overflow-hidden py-16">
       <OverviewStats />
       <SliderStats />
-      {/* <GraphStats /> */}
+      <GraphStats />
     </div>
   );
 };
