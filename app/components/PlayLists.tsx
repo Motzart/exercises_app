@@ -7,6 +7,7 @@ import EmptyState from './EmptyState';
 import PlaylistTimer from './PlaylistTimer';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import type { PlaylistWithCount } from '~/services/superbaseDb';
+import { Card, CardFooter, CardHeader, CardTitle } from './ui/card';
 
 const PlaceholderCard = () => {
   return (
@@ -26,6 +27,28 @@ const PlaceholderCard = () => {
         </div>
       </div>
     </li>
+  );
+};
+
+const PlayListCardShad = ({
+  playlist,
+  handleClick,
+}: {
+  playlist: PlaylistWithCount;
+  handleClick: () => void;
+}) => {
+  return (
+    <Card className="w-full max-w-sm">
+      <CardHeader>
+        <CardTitle>{playlist.name}</CardTitle>
+      </CardHeader>
+      <CardFooter>
+      <p className="text-gray-500 italic">
+              {playlist.exercise_count}{' '}
+              {playlist.exercise_count === 1 ? 'вправа' : 'вправ'}
+            </p>
+      </CardFooter>
+    </Card>
   );
 };
 
@@ -157,7 +180,12 @@ const PlayLists = () => {
         className="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
       >
         {playlists.map((playlist) => (
-          <PlayListCard
+          // <PlayListCard
+          //   handleClick={() => handleClickPlayList(playlist)}
+          //   key={playlist.id}
+          //   playlist={playlist}
+          // />
+          <PlayListCardShad
             handleClick={() => handleClickPlayList(playlist)}
             key={playlist.id}
             playlist={playlist}

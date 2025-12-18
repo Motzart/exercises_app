@@ -19,7 +19,15 @@ ChartJS.register(
   Legend,
 );
 
-const labels = ['Понеділок', 'Вівторок', 'Середа', 'Четвер', 'Пятниця', 'Субота', 'Неділя'];
+const labels = [
+  'Понеділок',
+  'Вівторок',
+  'Середа',
+  'Четвер',
+  'Пятниця',
+  'Субота',
+  'Неділя',
+];
 
 const options = {
   responsive: true,
@@ -38,7 +46,7 @@ const options = {
           const minutes = Math.floor(seconds / 60);
           const hours = Math.floor(minutes / 60);
           const remainingMinutes = minutes % 60;
-          
+
           if (hours > 0) {
             return `${hours}г ${remainingMinutes}хв`;
           }
@@ -56,7 +64,7 @@ const options = {
           const minutes = Math.floor(seconds / 60);
           const hours = Math.floor(minutes / 60);
           const remainingMinutes = minutes % 60;
-          
+
           if (hours > 0) {
             return `${hours}г ${remainingMinutes}хв`;
           }

@@ -82,9 +82,7 @@ function PlaylistTimer({ playlist }: PlaylistTimerProps) {
                       {isActive ? (
                         <CheckIcon className="size-5 text-green-400" />
                       ) : (
-                        <span className="text-xs text-gray-500">
-                          next
-                        </span>
+                        <span className="text-xs text-gray-500">next</span>
                       )}
                     </div>
                   </button>
