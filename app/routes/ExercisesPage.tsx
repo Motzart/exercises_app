@@ -1,11 +1,14 @@
 import AlphabetList from '~/components/AlphabetList';
 import CircleButton from '~/components/CircleButton';
 import CreateExercise from '~/components/CreateExercise';
+import { DataTable } from '~/components/data-table';
 import EditExercise from '~/components/EditExercise';
+import { ExercisesList } from '~/components/ExercisesList';
 import RunExercise from '~/components/RunExercise';
 import { useDeleteExercise, useExercises } from '~/hooks/useExercises';
 import { useModal } from '~/hooks/useModal';
 import type { Exercise } from '~/types/exercise';
+import { ExerciseTable } from '~/components/ExerciseTable';
 
 const ItemsPage = () => {
   const { openModal } = useModal();
@@ -40,26 +43,20 @@ const ItemsPage = () => {
   };
 
   return (
-    <main>
-      <div className="container mx-auto relative isolate overflow-hidden pt-16">
-        {/* <input
-          type="text"
-          placeholder="Search ..."
-          className="w-full my-10 p-2 border rounded-md border-white/20 outline-none focus:border-white/50"
-        /> */}
-        {exercises && exercises.length > 0 && (
-          <AlphabetList
-            exercises={exercises}
-            onItemClick={handleOpenPracticeModal}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        )}
-        <div className="fixed bottom-10 right-10">
-          <CircleButton clickHandler={handleOpenCreateModal} />
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          {exercises && exercises.length > 0 && (
+            <ExerciseTable
+              data={exercises}
+              onAdd={handleOpenCreateModal}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          )}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

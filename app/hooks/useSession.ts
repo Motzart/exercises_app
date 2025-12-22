@@ -12,6 +12,7 @@ export function useCreateSession() {
       queryClient.invalidateQueries({ queryKey: ['todayDuration'] });
       queryClient.invalidateQueries({ queryKey: ['sessionsByDay'] });
       queryClient.invalidateQueries({ queryKey: ['sessionsByDayOfWeek'] });
+      queryClient.invalidateQueries({ queryKey: ['sessionsByDateRange'] });
     },
   });
 }

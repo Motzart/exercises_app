@@ -197,3 +197,14 @@ CREATE POLICY "Users can update their own playlists"
 CREATE POLICY "Users can delete their own playlists"
   ON playlists FOR DELETE
   USING (auth.uid() = user_id);
+
+-- Миграция: добавление полей author и estimated_time в таблицу exercises
+-- Выполните этот запрос в Supabase SQL Editor для добавления новых полей
+ALTER TABLE exercises
+  ADD COLUMN IF NOT EXISTS author TEXT,
+  ADD COLUMN IF NOT EXISTS estimated_time INTEGER;
+
+-- Миграция: добавление 5 минут (300 секунд) к полю estimated_time
+-- Выполните этот запрос в Supabase SQL Editor для обновления значений
+UPDATE exercises
+SET estimated_time = COALESCE(estimated_time, 0) + 300;

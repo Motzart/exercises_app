@@ -43,10 +43,10 @@ const PlayListCardShad = ({
         <CardTitle>{playlist.name}</CardTitle>
       </CardHeader>
       <CardFooter>
-      <p className="text-gray-500 italic">
-              {playlist.exercise_count}{' '}
-              {playlist.exercise_count === 1 ? 'вправа' : 'вправ'}
-            </p>
+        <p className="text-gray-500 italic">
+          {playlist.exercise_count}{' '}
+          {playlist.exercise_count === 1 ? 'вправа' : 'вправ'}
+        </p>
       </CardFooter>
     </Card>
   );

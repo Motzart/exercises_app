@@ -268,6 +268,42 @@ export async function getTodayDurationSeconds() {
   return totalSeconds;
 }
 
+export async function getYesterdayDurationSeconds() {
+  const userId = await getCurrentUserId();
+
+  // Get start and end of yesterday in UTC for consistency with database timezone
+  const now = new Date();
+  const yesterdayUTC = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1),
+  );
+  const startOfYesterday = yesterdayUTC.toISOString();
+
+  const endOfYesterdayUTC = new Date(yesterdayUTC);
+  endOfYesterdayUTC.setUTCHours(23, 59, 59, 999);
+  const endOfYesterdayISO = endOfYesterdayUTC.toISOString();
+
+  const { data, error } = await supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startOfYesterday)
+    .lte('created_at', endOfYesterdayISO);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get yesterday duration');
+  }
+
+  if (!data || data.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = data.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+  return totalSeconds;
+}
+
 export async function getThisWeekDurationSeconds() {
   const userId = await getCurrentUserId();
 
@@ -483,7 +519,7 @@ export function formatDuration(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
 
-  return `${String(hours).padStart(2, '0')}h:${String(minutes).padStart(2, '0')}m`;
+  return `${hours}г. ${String(minutes).padStart(2, '0')}хв.`;
 }
 
 export interface ExerciseWeekStats {
@@ -674,6 +710,74 @@ export async function getSessionsByDay(): Promise<DaySessions[]> {
   return days;
 }
 
+export interface SessionByDate {
+  date: string; // YYYY-MM-DD format
+  durationSeconds: number;
+}
+
+export async function getSessionsByDateRange(
+  startDate: Date,
+  endDate: Date,
+): Promise<SessionByDate[]> {
+  const userId = await getCurrentUserId();
+
+  const startDateISO = new Date(startDate);
+  startDateISO.setHours(0, 0, 0, 0);
+  const startDateISOString = startDateISO.toISOString();
+
+  const endDateISO = new Date(endDate);
+  endDateISO.setHours(23, 59, 59, 999);
+  const endDateISOString = endDateISO.toISOString();
+
+  // Get sessions for the date range
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select('created_at, duration_seconds')
+    .eq('user_id', userId)
+    .gte('created_at', startDateISOString)
+    .lte('created_at', endDateISOString)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get sessions by date range');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return [];
+  }
+
+  // Group sessions by date
+  const dateMap = new Map<string, number>();
+
+  sessions.forEach((session: any) => {
+    const sessionDate = new Date(session.created_at);
+    const dateKey = sessionDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const durationSeconds = session.duration_seconds || 0;
+
+    if (dateMap.has(dateKey)) {
+      dateMap.set(dateKey, dateMap.get(dateKey)! + durationSeconds);
+    } else {
+      dateMap.set(dateKey, durationSeconds);
+    }
+  });
+
+  // Convert to array and fill missing dates with 0
+  const result: SessionByDate[] = [];
+  const currentDate = new Date(startDateISO);
+  const end = new Date(endDateISO);
+
+  while (currentDate <= end) {
+    const dateKey = currentDate.toISOString().split('T')[0];
+    result.push({
+      date: dateKey,
+      durationSeconds: dateMap.get(dateKey) || 0,
+    });
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return result;
+}
+
 export async function getSessionsByDayOfWeek(): Promise<number[]> {
   const userId = await getCurrentUserId();
 
@@ -799,7 +903,12 @@ export async function deleteExercise(exerciseId: string) {
 
 export async function updateExercise(
   exerciseId: string,
-  updates: Partial<Pick<Exercise, 'name' | 'favorite' | 'description'>>,
+  updates: Partial<
+    Pick<
+      Exercise,
+      'name' | 'favorite' | 'description' | 'author' | 'estimated_time'
+    >
+  >,
 ) {
   const userId = await getCurrentUserId();
 

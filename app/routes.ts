@@ -8,7 +8,7 @@ import {
 
 export default [
   layout('routes/auth/layout.tsx', [
-    index('routes/HomePage.tsx'),
+    index('routes/HomePage/Home.tsx'),
     route('/overview', 'routes/Overview/OverviewPage.tsx'),
     route('/calendar', 'routes/CalendarPage.tsx'),
     route('/history', 'routes/HistoryPage.tsx'),
