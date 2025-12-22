@@ -43,20 +43,17 @@ const ItemsPage = () => {
   };
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-          {exercises && exercises.length > 0 && (
-            <ExerciseTable
-              data={exercises}
-              onAdd={handleOpenCreateModal}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          )}
-        </div>
-      </div>
-    </div>
+    <>
+      {exercises && exercises.length > 0 && (
+        <ExerciseTable
+          data={exercises}
+          onAdd={handleOpenCreateModal}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onPractice={handleOpenPracticeModal}
+        />
+      )}
+    </>
   );
 };
 

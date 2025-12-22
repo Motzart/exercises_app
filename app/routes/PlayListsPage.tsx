@@ -112,14 +112,14 @@ const PlayListsPage = () => {
   };
 
   return (
-    <div className="pt-4">
+    <>
       <PlayListTable
         data={playlists}
         onAdd={handleOpenCreateModal}
         onEdit={() => {}}
         onDelete={handleDeletePlaylist}
       />
-    </div>
+    </>
   );
 };
 

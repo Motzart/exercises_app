@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   IconDotsVertical,
+  IconPlayerPlay,
   IconPlus,
   IconStar,
   IconStarFilled,
@@ -67,11 +68,13 @@ export function ExerciseTable({
   onAdd,
   onEdit,
   onDelete,
+  onPractice,
 }: {
   data: Exercise[];
   onAdd: () => void;
   onEdit: (exercise: Exercise) => void;
   onDelete: (exercise: Exercise) => void;
+  onPractice: (exercise: Exercise) => void;
 }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -86,6 +89,23 @@ export function ExerciseTable({
         header: () => <div className="pl-4">№</div>,
         cell: ({ row }) => {
           return <div className="pl-4">{row.index + 1}</div>;
+        },
+        enableHiding: false,
+      },
+      {
+        id: 'play',
+        header: '',
+        cell: ({ row }) => {
+          return (
+            <Button
+              variant="default"
+              size="icon"
+              onClick={() => onPractice(row.original)}
+              className="rounded-full bg-black text-white border-2 border-black dark:border-white hover:bg-black/90 cursor-pointer"
+            >
+              <IconPlayerPlay className="size-5" />
+            </Button>
+          );
         },
         enableHiding: false,
       },
@@ -191,7 +211,7 @@ export function ExerciseTable({
         ),
       },
     ],
-    [onEdit, onDelete, setFavoriteMutation],
+    [onEdit, onDelete, onPractice, setFavoriteMutation],
   );
 
   const table = useReactTable({
