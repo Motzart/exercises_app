@@ -9,6 +9,9 @@ import { usePlaylists, useDeletePlaylist } from '~/hooks/useExercises';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import EmptyState from '~/components/EmptyState';
 import type { PlaylistWithCount } from '~/services/superbaseDb';
+import { DataTable } from '~/components/data-table';
+import data from '../dashboard/data.json';
+import { PlayListTable } from '~/components/PlayListTable';
 
 const PlaceholderCard = () => {
   return (
@@ -92,73 +95,30 @@ const PlayListsPage = () => {
     openModal('regular', <CreatePlaylist />);
   };
 
-  const handleDeletePlaylist = (playlistId: string) => {
-    deletePlaylistMutation.mutate(playlistId);
+  const handleDeletePlaylist = async (playlistId: string) => {
+    const playlist = playlists.find((p) => p.id === playlistId);
+    if (
+      window.confirm(
+        `Ви впевнені, що хочете видалити плейлист "${playlist?.name || playlistId}"?`,
+      )
+    ) {
+      try {
+        await deletePlaylistMutation.mutateAsync(playlistId);
+      } catch (error) {
+        console.error('Error deleting playlist:', error);
+        alert('Помилка при видаленні плейлисту');
+      }
+    }
   };
 
-  const isAuthenticated = user !== null && user !== undefined;
-  const showPlaceholders = !isAuthenticating && !isAuthenticated;
-
-  if (showPlaceholders) {
-    return (
-      <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">
-        <div className="flex items-center gap-x-2">
-          <h2 className="text-lg font-light">Списки вправ:</h2>
-        </div>
-        <div className="mt-3 rounded-md border border-white/10 bg-gray-800/30 p-4">
-          <p className="text-sm text-gray-400">
-            Щоб додати списки вправ необхідно{' '}
-            <Link
-              to="/login"
-              className="font-medium text-white underline hover:text-gray-200"
-            >
-              авторизуватися
-            </Link>
-          </p>
-        </div>
-        <ul role="list" className="mt-3 flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <PlaceholderCard key={`placeholder-${index}`} />
-          ))}
-        </ul>
-        <div className="fixed bottom-10 right-10">
-          <CircleButton clickHandler={handleOpenCreateModal} />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto my-10 bg-gray-800/50 rounded-lg p-4">
-      {isLoading ? (
-        <div className="text-gray-400 text-sm">Завантаження...</div>
-      ) : !playlists || playlists.length === 0 ? (
-        <EmptyState
-          title="Поки що немає списків вправ"
-          description="Почати додавати списки вправ"
-          buttonText="Додати список"
-        />
-      ) : (
-        <div>
-          <div className="flex items-center gap-x-2 mb-3">
-            <h2 className="text-lg font-light">Списки вправ:</h2>
-          </div>
-          <ul role="list" className="flex flex-col gap-3">
-            {playlists.map((playlist) => (
-              <PlayListCard
-                key={playlist.id}
-                playlist={playlist}
-                onDelete={handleDeletePlaylist}
-                isDeleting={deletePlaylistMutation.isPending}
-              />
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="fixed bottom-10 right-10">
-        <CircleButton clickHandler={handleOpenCreateModal} />
-      </div>
+    <div className="pt-4">
+      <PlayListTable
+        data={playlists}
+        onAdd={handleOpenCreateModal}
+        onEdit={() => {}}
+        onDelete={handleDeletePlaylist}
+      />
     </div>
   );
 };

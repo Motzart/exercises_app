@@ -13,7 +13,11 @@ import Header from './components/Header';
 import ModalManager from './components/ModalManager';
 import { SupabaseAuthProvider } from './lib/SupabaseAuthProvider';
 import { QueryProvider } from './lib/QueryClientProvider';
+import { ThemeProvider } from './lib/ThemeProvider';
 import Navbar from './components/Navbar';
+import { SidebarInset, SidebarProvider } from './components/ui/sidebar';
+import { AppSidebar } from './components/app-sidebar';
+import { SiteHeader } from './components/site-header';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -30,7 +34,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -38,9 +42,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <QueryProvider>
-          <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
-        </QueryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            <SupabaseAuthProvider>{children}</SupabaseAuthProvider>
+          </QueryProvider>
+        </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -50,13 +61,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <>
-      <Navbar />
-      <div className="pt-16">
+    <SidebarProvider
+      style={
+        {
+          '--sidebar-width': 'calc(var(--spacing) * 72)',
+          '--header-height': 'calc(var(--spacing) * 12)',
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
         <Outlet />
-      </div>
+      </SidebarInset>
       <ModalManager />
-    </>
+    </SidebarProvider>
   );
 }
 

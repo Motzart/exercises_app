@@ -15,6 +15,7 @@ import { Link } from 'react-router';
 import FavoritesList from '~/components/FavoritesList';
 import HomeStatsBlock from '~/components/HomeStatsBlock';
 import PlayLists from '~/components/PlayLists';
+import { Button } from '~/components/ui/button';
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: 'Practice Journal' }, { name: 'description' }];
@@ -54,6 +55,9 @@ export default function HomePage() {
       <main>
         <div className="container mx-auto relative isolate overflow-hidden pt-16">
           <HomeStatsBlock />
+          <div className="mt-4">
+            <Button>Кнопка</Button>
+          </div>
         </div>
         <div className="container mx-auto relative isolate overflow-hidden">
           <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2">

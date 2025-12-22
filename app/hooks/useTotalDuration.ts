@@ -3,6 +3,7 @@ import {
   formatDuration,
   getTotalDurationSeconds,
   getTodayDurationSeconds,
+  getYesterdayDurationSeconds,
   getExercisesCount,
   getExercisesWeekStats,
   getThisWeekDurationSeconds,
@@ -10,7 +11,9 @@ import {
   getThisMonthDurationSeconds,
   getLastMonthDurationSeconds,
   getSessionsByDayOfWeek,
+  getSessionsByDateRange,
   type ExerciseWeekStats,
+  type SessionByDate,
 } from '~/services/superbaseDb';
 
 export function useTotalDuration() {
@@ -32,6 +35,17 @@ export function useTodayDuration() {
       return formatDuration(totalSeconds);
     },
     staleTime: 1 * 60 * 1000, // 1 minute (more frequent updates for today's data)
+  });
+}
+
+export function useYesterdayDuration() {
+  return useQuery({
+    queryKey: ['yesterdayDuration'],
+    queryFn: async () => {
+      const totalSeconds = await getYesterdayDurationSeconds();
+      return formatDuration(totalSeconds);
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -60,6 +74,20 @@ export function useSessionsByDayOfWeek() {
     queryKey: ['sessionsByDayOfWeek'],
     queryFn: async () => {
       return await getSessionsByDayOfWeek();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useSessionsByDateRange(startDate: Date, endDate: Date) {
+  return useQuery<SessionByDate[]>({
+    queryKey: [
+      'sessionsByDateRange',
+      startDate.toISOString(),
+      endDate.toISOString(),
+    ],
+    queryFn: async () => {
+      return await getSessionsByDateRange(startDate, endDate);
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

@@ -1,15 +1,12 @@
-import {
-  CheckIcon,
-  PauseIcon,
-  PlayIcon,
-  PlayPauseIcon,
-} from '@heroicons/react/16/solid';
+import { CheckIcon, PauseIcon, PlayPauseIcon } from '@heroicons/react/16/solid';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
-import type { CreateSessionInput, Exercise, Session } from '~/types/exercise';
+import type { CreateSessionInput, Exercise } from '~/types/exercise';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useCreateSession } from '~/hooks/useSession';
 import SliderNotes from './SliderNotes';
+import { Button } from './ui/button';
+import { cn } from '~/lib/utils';
 
 const OwnTimer = ({
   onClose,
@@ -73,6 +70,7 @@ const OwnTimer = ({
   const displayHours = Math.floor(totalSeconds / 3600);
   const displayMinutes = Math.floor((totalSeconds % 3600) / 60);
   const displaySeconds = totalSeconds % 60;
+
   // Progress bar configuration: 15 minutes = 900 seconds, 3 segments of 5 minutes each
   const TOTAL_DURATION_SECONDS = 15 * 60; // 900 seconds
   const SEGMENT_DURATION_SECONDS = 5 * 60; // 300 seconds per segment
@@ -97,72 +95,93 @@ const OwnTimer = ({
   const timeMarkers = ['5хв', '10хв', '15хв'];
 
   return (
-    <div className="flex flex-col w-full h-full">
-      {/* Timer content */}
-      <div className="flex flex-col items-center justify-center relative">
-        <div
-          className={`text-6xl font-bold w-full text-center flex flex-row items-center justify-center gap-1 transition-opacity duration-300 ${
-            !isRunning ? 'opacity-40' : ''
-          }`}
-        >
-          <span className="w-[80px]">{formatTime(displayHours)}</span>
-          <span className="mx-1">:</span>
-          <span className="w-[80px]">{formatTime(displayMinutes)}</span>
-          <span className="mx-1">:</span>
-          <span className="w-[80px]">{formatTime(displaySeconds)}</span>
-        </div>
-        <div
-          className={`text-sm text-gray-500 transition-opacity duration-300 ${
-            !isRunning ? 'opacity-40' : ''
-          }`}
-        >
-          {displayHours}h {displayMinutes}m {displaySeconds}s
-        </div>
-        {!isRunning && (
-          <div className="absolute inset-0 flex justify-center pointer-events-none">
-            <div className="bg-gray-800/80 w-2xl h-[80px] rounded-full flex items-center justify-center">
-              <div className="text-4xl font-bold text-white">Пауза</div>
+    <div className="flex flex-col h-full w-full">
+      {/* Main Content Area */}
+      <div className="w-full text-center text-sm text-muted-foreground font-medium">
+        {exercise?.description}
+      </div>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 py-8 gap-12">
+        {/* Timer Display - Large and Centered */}
+        <div className="flex flex-col items-center gap-6">
+          <div className="relative">
+            <div
+              className={cn(
+                'text-8xl sm:text-9xl lg:text-[12rem] font-mono font-bold tracking-tight transition-all duration-500',
+                'text-sky-400',
+                !isRunning && 'opacity-50',
+              )}
+            >
+              <span className="tabular-nums">
+                {formatTime(displayHours)}:{formatTime(displayMinutes)}:
+                {formatTime(displaySeconds)}
+              </span>
             </div>
-          </div>
-        )}
-        <div className="flex flex-row gap-10 pt-10">
-          <button
-            className="bg-gray-500 text-white w-32 h-32 rounded-full flex items-center justify-center hover:bg-gray-600 cursor-pointer shadow-lg hover:shadow-xl transition-all duration-200 active:scale-[0.98] active:shadow-md active:translate-y-0.5"
-            onClick={() => (isRunning ? handlePause() : handleStart())}
-          >
-            {isRunning ? (
-              <div className="flex flex-col items-center justify-center">
-                <PauseIcon className="size-12" />
-                <span className="text-sm font-bold text-white">pause</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center">
-                <PlayPauseIcon className="size-12" />
-                <span className="text-sm font-bold text-white">pause</span>
+
+            {/* Pause Badge */}
+            {!isRunning && totalSeconds > 0 && (
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2">
+                <div className="bg-muted px-4 py-1.5 rounded-full border">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                    Пауза
+                  </span>
+                </div>
               </div>
             )}
-          </button>
-          <button
-            className={`bg-green-700 text-white w-32 h-32 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 ${
-              createSessionMutation.isPending
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-green-500 cursor-pointer hover:shadow-xl active:scale-[0.98] active:shadow-md active:translate-y-0.5'
-            }`}
-            onClick={handleStop}
-            disabled={createSessionMutation.isPending}
+          </div>
+
+          {/* Time Label */}
+          <div className="text-sm text-muted-foreground font-medium">
+            {displayHours}h {displayMinutes}m {displaySeconds}s
+          </div>
+        </div>
+
+        {/* Control Buttons - Horizontal Layout */}
+        <div className="flex items-center gap-3 sm:gap-4 w-full max-w-md">
+          <Button
+            variant={isRunning ? 'outline' : 'default'}
+            size="lg"
+            onClick={() => (isRunning ? handlePause() : handleStart())}
+            className={cn(
+              'flex-1 h-14 sm:h-16 text-base font-semibold gap-2',
+              isRunning && 'border-2',
+            )}
           >
-            <div className="flex flex-col items-center justify-center">
-              <CheckIcon className="size-12" />
-              <span className="text-sm font-bold text-white">done</span>
-            </div>
-          </button>
+            {isRunning ? (
+              <>
+                <PauseIcon className="size-5" />
+                <span>Пауза</span>
+              </>
+            ) : (
+              <>
+                <PlayPauseIcon className="size-5" />
+                <span>Старт</span>
+              </>
+            )}
+          </Button>
+
+          <Button
+            variant="default"
+            size="lg"
+            onClick={handleStop}
+            disabled={createSessionMutation.isPending || totalSeconds === 0}
+            className="flex-1 h-14 sm:h-16 bg-green-600 hover:bg-green-700 text-white text-base font-semibold gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <CheckIcon className="size-5" />
+            <span>
+              {createSessionMutation.isPending ? 'Збереження...' : 'Завершити'}
+            </span>
+          </Button>
         </div>
       </div>
-      <SliderNotes exerciseId={exercise?.id || null} />
 
-      {/* Full-width progress bar at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 bg-gray-200 z-50">
-        <div className="flex h-8 w-full relative">
+      {/* Notes Section */}
+      {/* <div className="px-4 sm:px-6 lg:px-8 pb-24">
+        <SliderNotes exerciseId={exercise?.id || null} />
+      </div> */}
+
+      {/* Progress Bar - Fixed Bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
+        <div className="flex h-1.5 w-full relative overflow-hidden">
           {[0, 1, 2].map((segmentIndex) => {
             const isCompleted = segmentIndex < currentSegment;
             const isCurrent = segmentIndex === currentSegment;
@@ -175,11 +194,14 @@ const OwnTimer = ({
             return (
               <div
                 key={segmentIndex}
-                className="relative"
+                className="relative bg-muted/20"
                 style={{ width: '33.33%' }}
               >
                 <div
-                  className={`${segmentColors[segmentIndex]} h-full transition-all duration-300 ease-linear`}
+                  className={cn(
+                    segmentColors[segmentIndex],
+                    'h-full transition-all duration-300 ease-linear shadow-sm',
+                  )}
                   style={{
                     width: `${segmentFillPercent}%`,
                   }}
@@ -188,17 +210,23 @@ const OwnTimer = ({
             );
           })}
         </div>
-        {/* Time markers */}
-        <div className="flex w-full bg-gray-600 py-2">
-          {timeMarkers.map((marker, index) => (
-            <div
-              key={index}
-              className="flex-1 text-center text-xs text-white font-medium"
-              style={{ width: '33.33%' }}
-            >
-              {marker}
-            </div>
-          ))}
+        {/* Time Markers */}
+        <div className="flex w-full bg-muted/10 py-2.5 px-4 border-t border-border/50">
+          {timeMarkers.map((marker, index) => {
+            const isActive = index <= currentSegment;
+            return (
+              <div
+                key={index}
+                className={cn(
+                  'flex-1 text-center text-xs font-medium transition-colors',
+                  isActive ? 'text-foreground' : 'text-muted-foreground',
+                )}
+                style={{ width: '33.33%' }}
+              >
+                {marker}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

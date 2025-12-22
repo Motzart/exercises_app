@@ -134,7 +134,12 @@ export function useUpdateExercise() {
       updates,
     }: {
       exerciseId: string;
-      updates: Partial<Pick<Exercise, 'name' | 'favorite' | 'description'>>;
+      updates: Partial<
+        Pick<
+          Exercise,
+          'name' | 'favorite' | 'description' | 'author' | 'estimated_time'
+        >
+      >;
     }) => updateExercise(exerciseId, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exercises'] });

@@ -1,6 +1,18 @@
 import { useSearchParams, Form } from 'react-router';
 import { useState } from 'react';
 import { supabaseClient } from '~/lib/supabaseClient';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card';
+import { Button } from '~/components/ui/button';
+import { Input } from '~/components/ui/input';
+import { Label } from '~/components/ui/label';
 
 export default function LoginPage() {
   const [params] = useSearchParams();
@@ -23,12 +35,17 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="container mx-auto relative isolate overflow-hidden pt-16">
-      <h1>Login</h1>
-
-      <button onClick={handleGoogleLogin} disabled={loading}>
-        {loading ? 'Redirecting...' : 'Sign in with Google'}
-      </button>
-    </main>
+    <div className="flex justify-center items-center h-screen">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-center">Login to your account</CardTitle>
+        </CardHeader>
+        <CardFooter className="flex-col gap-2">
+          <Button variant="outline" className="w-full cursor-pointer">
+            Login with Google
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }

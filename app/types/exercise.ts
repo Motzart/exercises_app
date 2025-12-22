@@ -1,6 +1,8 @@
 export interface Exercise {
   id: string;
   name: string;
+  author: string;
+  estimated_time: number;
   favorite: boolean;
   description: string;
   user_id: string;
