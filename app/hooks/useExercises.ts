@@ -6,6 +6,7 @@ import {
   deletePlaylist,
   getExercises,
   getExercisesByIds,
+  getPlaylistById,
   getPlaylists,
   getSessionsByDay,
   setFavoriteItem,
@@ -164,6 +165,18 @@ export function usePlaylists() {
     queryFn: async () => {
       return await getPlaylists();
     },
+    placeholderData: (previousData) => previousData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function usePlaylist(playlistId: string) {
+  return useQuery({
+    queryKey: ['playlist', playlistId],
+    queryFn: async () => {
+      return await getPlaylistById(playlistId);
+    },
+    enabled: !!playlistId,
     placeholderData: (previousData) => previousData,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

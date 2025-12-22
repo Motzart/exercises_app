@@ -987,6 +987,30 @@ export async function getPlaylists() {
   return playlistsWithCount;
 }
 
+export async function getPlaylistById(playlistId: string) {
+  const userId = await getCurrentUserId();
+
+  const { data, error } = await supabaseClient
+    .from('playlists')
+    .select('*')
+    .eq('id', playlistId)
+    .eq('user_id', userId)
+    .single();
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get playlist');
+  }
+
+  if (!data) {
+    throw new Error('Playlist not found');
+  }
+
+  return {
+    ...data,
+    exercise_count: data.exercise_ids?.length || 0,
+  } as PlaylistWithCount;
+}
+
 export async function deletePlaylist(playlistId: string) {
   const userId = await getCurrentUserId();
 

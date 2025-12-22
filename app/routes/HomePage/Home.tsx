@@ -54,7 +54,7 @@ const Home = () => {
           </div>
           <div className="w-full">
             <h1 className="pb-4">Списки вправ:</h1>
-            <PlayListItems playlists={playlists || []} onItemClick={() => {}} />
+            <PlayListItems playlists={playlists || []} />
           </div>
         </div>
       </div>

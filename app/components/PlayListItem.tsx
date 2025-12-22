@@ -8,15 +8,15 @@ import {
 } from '~/components/ui/item';
 import { ListBulletIcon } from '@heroicons/react/16/solid';
 import { IconCalendarEvent } from '@tabler/icons-react';
+import { Link } from 'react-router';
 import type { PlaylistWithCount } from '~/services/superbaseDb';
 import { formatDate } from '~/utils';
 
 interface PlayListItemProps {
-  playlist: [];
-  onItemClick: (playlist: any) => void;
+  playlist: PlaylistWithCount;
 }
 
-function PlayListItem({ playlist, onItemClick }: PlayListItemProps) {
+function PlayListItem({ playlist }: PlayListItemProps) {
   return (
     <Item
       variant="outline"
@@ -24,12 +24,8 @@ function PlayListItem({ playlist, onItemClick }: PlayListItemProps) {
       role="listitem"
       className="bg-blue-50/50 dark:bg-blue-950/20 hover:border-blue-400 dark:hover:border-blue-500 [a]:hover:bg-transparent"
     >
-      <a
-        href="#"
-        onClick={(e) => {
-          e.preventDefault();
-          onItemClick(playlist);
-        }}
+      <Link
+        to={`/play-lists/${playlist.id}`}
       >
         <ItemMedia variant="image">
           <ListBulletIcon className="size-6 text-blue-500 dark:text-blue-400" />
@@ -48,17 +44,15 @@ function PlayListItem({ playlist, onItemClick }: PlayListItemProps) {
             </span>
           </ItemDescription>
         </ItemContent>
-      </a>
+      </Link>
     </Item>
   );
 }
 
 export function PlayListItems({
   playlists,
-  onItemClick,
 }: {
   playlists: PlaylistWithCount[];
-  onItemClick: (playlist: PlaylistWithCount) => void;
 }) {
   return (
     <div className="flex w-full flex-col gap-6">
@@ -67,7 +61,6 @@ export function PlayListItems({
           <PlayListItem
             key={playlist.id}
             playlist={playlist}
-            onItemClick={onItemClick}
           />
         ))}
       </ItemGroup>
