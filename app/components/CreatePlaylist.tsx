@@ -80,6 +80,69 @@ function ExerciseItem({ exercise, isDragging }: ExerciseItemProps) {
   );
 }
 
+interface SelectedExerciseItemProps {
+  exercise: Exercise;
+  isDragging: boolean;
+  onRemove: (exerciseId: string) => void;
+}
+
+function SelectedExerciseItem({
+  exercise,
+  isDragging,
+  onRemove,
+}: SelectedExerciseItemProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: `exercise-${exercise.id}`,
+    data: {
+      type: 'exercise',
+      exercise,
+    },
+  });
+
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.4 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        touchAction: 'none',
+      }}
+      {...listeners}
+      {...attributes}
+      className={cn(
+        'p-3 mb-2 rounded-md bg-card border border-border flex items-center justify-between group cursor-grab active:cursor-grabbing hover:bg-accent transition-colors select-none',
+        isDragging && 'opacity-40',
+      )}
+    >
+      <div className="flex-1">
+        <div className="text-sm font-medium">{exercise.name}</div>
+        {exercise.description && (
+          <div className="text-xs text-muted-foreground mt-1">
+            {exercise.description}
+          </div>
+        )}
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(exercise.id);
+        }}
+        className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+        aria-label="Видалити"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
 interface DroppableColumnProps {
   id: string;
   children: React.ReactNode;
@@ -329,31 +392,12 @@ function CreatePlaylist() {
                       </div>
                     ) : (
                       selectedExercises.map((exercise) => (
-                        <div
+                        <SelectedExerciseItem
                           key={exercise.id}
-                          className="p-3 mb-2 rounded-md bg-card border border-border flex items-center justify-between group"
-                        >
-                          <div className="flex-1">
-                            <div className="text-sm font-medium">
-                              {exercise.name}
-                            </div>
-                            {exercise.description && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {exercise.description}
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => removeFromSelected(exercise.id)}
-                            className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
-                            aria-label="Видалити"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
+                          exercise={exercise}
+                          isDragging={activeId === `exercise-${exercise.id}`}
+                          onRemove={removeFromSelected}
+                        />
                       ))
                     )}
                   </DroppableColumn>
