@@ -96,8 +96,8 @@ const HistoryPage = () => {
   }
 
   return (
-    <div className="container mx-auto relative isolate overflow-hidden pt-16">
-      <div className="mt-6 overflow-hidden border-t border-white/5">
+    <div className="container mx-auto relative isolate overflow-hidden">
+      <div className="overflow-hidden border-t border-white/5">
         <div className="mx-auto">
           <div className="mx-auto">
             <table className="w-full text-left">

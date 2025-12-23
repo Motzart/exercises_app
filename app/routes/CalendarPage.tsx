@@ -168,11 +168,6 @@ export default function CalendarPage() {
               key={meeting.id}
               className="relative flex gap-x-6 py-6 xl:static"
             >
-              <img
-                alt=""
-                src={meeting.imageUrl}
-                className="size-14 flex-none rounded-full outline -outline-offset-1 outline-white/10"
-              />
               <div className="flex-auto">
                 <h3 className="pr-10 font-semibold text-white xl:pr-0">
                   {meeting.name}

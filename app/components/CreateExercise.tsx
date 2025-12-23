@@ -1,12 +1,22 @@
 import { Formik } from 'formik';
-import Devider from './Devider';
-
 import * as Yup from 'yup';
-import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useContext } from 'react';
+import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useModal } from '~/hooks/useModal';
 import { useCreateExercise } from '~/hooks/useExercises';
 import type { CreateExerciseInput } from '~/types/exercise';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Button } from './ui/button';
+import { Textarea } from './ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { Separator } from './ui/separator';
 
 const ExerciseSchema = Yup.object().shape({
   name: Yup.string()
@@ -15,9 +25,13 @@ const ExerciseSchema = Yup.object().shape({
     .required("Назва обов'язкова!"),
   author: Yup.string().max(180, 'Автор занадто довгий!'),
   description: Yup.string().max(180, 'Опис занадто довгий!'),
-  estimated_time: Yup.number()
-    .min(0, "Час не може бути від'ємним")
-    .required("Час обов'язковий"),
+  estimated_time: Yup.string()
+    .required("Час обов'язковий")
+    .test('is-positive', "Час не може бути від'ємним", (value) => {
+      if (!value) return false;
+      const num = Number(value);
+      return num >= 0;
+    }),
 });
 
 const CreateExercise = () => {
@@ -60,7 +74,7 @@ const CreateExercise = () => {
           name: '',
           author: '',
           description: '',
-          estimated_time: 5,
+          estimated_time: '5',
         }}
         validationSchema={ExerciseSchema}
         onSubmit={(values) => handleSubmitButton(values)}
@@ -72,131 +86,141 @@ const CreateExercise = () => {
           handleChange,
           handleBlur,
           handleSubmit,
+          setFieldValue,
           isSubmitting,
           isValid,
           dirty,
         }) => {
           return (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Назва <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Назва вправи"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.name}
-                    maxLength={180}
-                    className="block w-full rounded-md px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6 bg-gray-800"
-                  />
-                  {errors.name && touched.name ? (
-                    <div className="ml-1 text-sm text-red-600 mt-1">
-                      {errors.name}
-                    </div>
-                  ) : null}
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">
+                  Назва <span className="text-destructive">*</span>
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Назва вправи"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.name}
+                  maxLength={180}
+                  aria-invalid={errors.name && touched.name ? 'true' : 'false'}
+                />
+                {errors.name && touched.name ? (
+                  <p className="text-sm text-destructive mt-1">{errors.name}</p>
+                ) : null}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Автор
-                </label>
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    name="author"
-                    placeholder="Автор вправи"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.author}
-                    maxLength={180}
-                    className="block w-full rounded-md px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6 bg-gray-800"
-                  />
-                  {errors.author && touched.author ? (
-                    <div className="ml-1 text-sm text-red-600 mt-1">
-                      {errors.author}
-                    </div>
-                  ) : null}
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="author">Автор</Label>
+                <Input
+                  id="author"
+                  name="author"
+                  type="text"
+                  placeholder="Автор вправи"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.author}
+                  maxLength={180}
+                  aria-invalid={
+                    errors.author && touched.author ? 'true' : 'false'
+                  }
+                />
+                {errors.author && touched.author ? (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.author}
+                  </p>
+                ) : null}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Опис
-                </label>
-                <div className="mt-2">
-                  <textarea
-                    name="description"
-                    placeholder="Опис вправи"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.description}
-                    maxLength={180}
-                    rows={3}
-                    className="block w-full rounded-md px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 sm:text-sm/6 bg-gray-800 resize-none"
-                  />
-                  {errors.description && touched.description ? (
-                    <div className="ml-1 text-sm text-red-600 mt-1">
-                      {errors.description}
-                    </div>
-                  ) : null}
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Опис</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  placeholder="Опис вправи"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.description}
+                  maxLength={180}
+                  rows={3}
+                  aria-invalid={
+                    errors.description && touched.description ? 'true' : 'false'
+                  }
+                />
+                {errors.description && touched.description ? (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.description}
+                  </p>
+                ) : null}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Орієнтовний час <span className="text-red-500">*</span>
-                </label>
-                <div className="mt-2">
-                  <select
-                    name="estimated_time"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.estimated_time}
-                    className="block w-full rounded-md px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-gray-300 sm:text-sm/6 bg-gray-800"
+              <div className="space-y-2">
+                <Label htmlFor="estimated_time">
+                  Орієнтовний час <span className="text-destructive">*</span>
+                </Label>
+                <Select
+                  value={values.estimated_time}
+                  onValueChange={(value) =>
+                    setFieldValue('estimated_time', value)
+                  }
+                  name="estimated_time"
+                >
+                  <SelectTrigger
+                    id="estimated_time"
+                    className="w-full"
+                    aria-invalid={
+                      errors.estimated_time && touched.estimated_time
+                        ? 'true'
+                        : 'false'
+                    }
                   >
+                    <SelectValue placeholder="Оберіть час" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {Array.from({ length: 25 }, (_, i) => (i + 1) * 5).map(
                       (minutes) => (
-                        <option key={minutes} value={minutes}>
+                        <SelectItem key={minutes} value={String(minutes)}>
                           {minutes} хвилин
-                        </option>
+                        </SelectItem>
                       ),
                     )}
-                  </select>
-                  {errors.estimated_time && touched.estimated_time ? (
-                    <div className="ml-1 text-sm text-red-600 mt-1">
-                      {errors.estimated_time}
-                    </div>
-                  ) : null}
-                </div>
+                  </SelectContent>
+                </Select>
+                {errors.estimated_time && touched.estimated_time ? (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.estimated_time}
+                  </p>
+                ) : null}
               </div>
 
-              <Devider />
+              <Separator />
+
               <div className="flex flex-row gap-2">
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={closeAllModals}
-                  className="nline-flex w-full justify-center rounded-md bg-transparent px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2 cursor-pointer"
+                  className="flex-1"
                 >
                   Передумав
-                </button>
-                <button
+                </Button>
+                <Button
                   type="submit"
+                  variant="default"
                   disabled={
                     isSubmitting ||
                     createExerciseMutation.isPending ||
                     !(dirty && isValid)
                   }
-                  className="nline-flex w-full justify-center rounded-md disabled:hover:bg-green-600 disabled:opacity-50 bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2 cursor-pointer"
+                  className="flex-1 bg-green-600 hover:bg-green-700"
                 >
                   {isSubmitting || createExerciseMutation.isPending
                     ? 'Зберігаємо...'
                     : 'Зберегти'}
-                </button>
+                </Button>
               </div>
             </form>
           );

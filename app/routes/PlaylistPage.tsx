@@ -37,8 +37,10 @@ export default function PlaylistPage() {
   return (
     <div className="px-4 lg:px-6">
       <h1 className="pb-4">{playlist.name}</h1>
-      <CustomItems exercises={exercises} onItemClick={handleOpenPracticeModal} />
+      <CustomItems
+        exercises={exercises}
+        onItemClick={handleOpenPracticeModal}
+      />
     </div>
   );
 }
-

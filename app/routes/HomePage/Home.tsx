@@ -21,6 +21,7 @@ import type { Exercise } from '~/types/exercise';
 import RunExercise from '~/components/RunExercise';
 import { useModal } from '~/hooks/useModal';
 import { PlayListItems } from '~/components/PlayListItem';
+import CalendarView from '~/components/CalendarView';
 
 const Home = () => {
   const { openModal } = useModal();
@@ -44,6 +45,10 @@ const Home = () => {
       <div className="px-4 lg:px-6">
         {/* <ChartAreaInteractive /> */}
         {/* <GraphStats /> */}
+        <div className="w-full flex flex-row gap-4 justify-between">
+          <div>Events:</div>
+          <CalendarView />
+        </div>
         <div className=" flex flex-row gap-4">
           <div className="w-full">
             <h1 className="pb-4">Вибрані вправи:</h1>

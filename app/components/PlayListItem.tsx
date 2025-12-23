@@ -24,9 +24,7 @@ function PlayListItem({ playlist }: PlayListItemProps) {
       role="listitem"
       className="bg-blue-50/50 dark:bg-blue-950/20 hover:border-blue-400 dark:hover:border-blue-500 [a]:hover:bg-transparent"
     >
-      <Link
-        to={`/play-lists/${playlist.id}`}
-      >
+      <Link to={`/play-lists/${playlist.id}`}>
         <ItemMedia variant="image">
           <ListBulletIcon className="size-6 text-blue-500 dark:text-blue-400" />
         </ItemMedia>
@@ -58,10 +56,7 @@ export function PlayListItems({
     <div className="flex w-full flex-col gap-6">
       <ItemGroup className="gap-4">
         {playlists.map((playlist) => (
-          <PlayListItem
-            key={playlist.id}
-            playlist={playlist}
-          />
+          <PlayListItem key={playlist.id} playlist={playlist} />
         ))}
       </ItemGroup>
     </div>

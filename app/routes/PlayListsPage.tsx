@@ -92,7 +92,7 @@ const PlayListsPage = () => {
   const deletePlaylistMutation = useDeletePlaylist();
 
   const handleOpenCreateModal = () => {
-    openModal('regular', <CreatePlaylist />);
+    openModal('fullwindow', <CreatePlaylist />);
   };
 
   const handleDeletePlaylist = async (playlistId: string) => {

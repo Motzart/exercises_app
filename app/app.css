@@ -139,25 +139,25 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  
+
   /* Глобальные стили для кнопок и ссылок */
   button:not(:disabled),
   a,
-  [role="button"]:not(:disabled),
-  [data-slot="button"]:not(:disabled),
-  [data-slot="sidebar-menu-button"]:not(:disabled),
-  [data-slot="sidebar-menu-sub-button"]:not(:disabled),
-  [data-slot="sidebar-menu-action"]:not(:disabled),
-  [data-slot="sidebar-group-action"]:not(:disabled),
-  [data-slot="dropdown-menu-item"]:not(:disabled),
-  [data-slot="dropdown-menu-trigger"]:not(:disabled),
-  [data-slot="dropdown-menu-sub-trigger"]:not(:disabled) {
+  [role='button']:not(:disabled),
+  [data-slot='button']:not(:disabled),
+  [data-slot='sidebar-menu-button']:not(:disabled),
+  [data-slot='sidebar-menu-sub-button']:not(:disabled),
+  [data-slot='sidebar-menu-action']:not(:disabled),
+  [data-slot='sidebar-group-action']:not(:disabled),
+  [data-slot='dropdown-menu-item']:not(:disabled),
+  [data-slot='dropdown-menu-trigger']:not(:disabled),
+  [data-slot='dropdown-menu-sub-trigger']:not(:disabled) {
     @apply cursor-pointer;
   }
-  
+
   button:disabled,
-  [role="button"]:disabled,
-  [data-slot="button"]:disabled {
+  [role='button']:disabled,
+  [data-slot='button']:disabled {
     @apply cursor-not-allowed;
   }
 }

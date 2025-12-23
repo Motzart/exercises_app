@@ -62,7 +62,7 @@ const data = {
     },
     {
       title: 'Календар',
-      url: '#',
+      url: '/calendar',
       icon: IconUsers,
     },
   ],

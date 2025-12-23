@@ -53,7 +53,11 @@ export function PageBreadcrumb() {
     currentPath += `/${segment}`;
 
     // Для динамических маршрутов (например, /play-lists/:id)
-    if (i === pathSegments.length - 1 && id && currentPath.startsWith('/play-lists/')) {
+    if (
+      i === pathSegments.length - 1 &&
+      id &&
+      currentPath.startsWith('/play-lists/')
+    ) {
       // Последний элемент будет динамическим
       break;
     }
@@ -78,7 +82,8 @@ export function PageBreadcrumb() {
         <BreadcrumbList>
           {breadcrumbs.map((crumb, index) => {
             const isLast = index === breadcrumbs.length - 1;
-            const isDynamic = isLast && id && pathname.startsWith('/play-lists/');
+            const isDynamic =
+              isLast && id && pathname.startsWith('/play-lists/');
             const isHome = crumb.href === '/';
 
             return (
@@ -92,7 +97,10 @@ export function PageBreadcrumb() {
                     )
                   ) : (
                     <BreadcrumbLink asChild>
-                      <Link to={crumb.href} className="flex items-center gap-1.5">
+                      <Link
+                        to={crumb.href}
+                        className="flex items-center gap-1.5"
+                      >
                         {isHome && <IconHome className="size-4" />}
                         {crumb.label}
                       </Link>
@@ -108,4 +116,3 @@ export function PageBreadcrumb() {
     </div>
   );
 }
-
