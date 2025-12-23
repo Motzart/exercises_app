@@ -59,7 +59,10 @@ function ExerciseItem({ exercise, isDragging }: ExerciseItemProps) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        touchAction: 'none',
+      }}
       {...listeners}
       {...attributes}
       className={cn(
@@ -112,7 +115,9 @@ function DroppableColumn({
         <h3 className="text-sm font-semibold mb-3">
           {title} ({count})
         </h3>
-        <div className="overflow-y-auto max-h-[350px] flex-1">{children}</div>
+        <div className="overflow-y-auto max-h-[350px] flex-1" style={{ touchAction: 'pan-y' }}>
+          {children}
+        </div>
       </CardContent>
     </Card>
   );
@@ -135,12 +140,7 @@ function CreatePlaylist() {
         distance: 8,
       },
     }),
-    useSensor(TouchSensor, {
-      activationConstraint: {
-        delay: 250,
-        tolerance: 5,
-      },
-    }),
+    useSensor(TouchSensor, {}),
     useSensor(KeyboardSensor),
   );
 
