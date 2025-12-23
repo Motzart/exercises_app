@@ -41,7 +41,7 @@ export default function LoginPage() {
           <CardTitle className="text-center">Login to your account</CardTitle>
         </CardHeader>
         <CardFooter className="flex-col gap-2">
-          <Button variant="outline" className="w-full cursor-pointer">
+          <Button variant="outline" onClick={handleGoogleLogin} className="w-full cursor-pointer" >
             Login with Google
           </Button>
         </CardFooter>
