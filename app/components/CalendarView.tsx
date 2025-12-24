@@ -43,7 +43,7 @@ const CalendarView = () => {
   const formatDuration = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (hours === 0) {
       return `${minutes} хв.`;
     }
@@ -56,9 +56,9 @@ const CalendarView = () => {
   // Функция для определения уровня занятий
   const getSessionLevel = (durationSeconds: number): string | null => {
     if (durationSeconds === 0) return null;
-    
+
     const hours = durationSeconds / 3600;
-    
+
     if (hours < 1) {
       return 'low'; // Голубоватый (< 1 часа)
     } else if (hours >= 1 && hours <= 2) {
@@ -66,7 +66,7 @@ const CalendarView = () => {
     } else if (hours > 3) {
       return 'high'; // Ярко зеленый (> 3 часов)
     }
-    
+
     // От 2 до 3 часов - используем средний уровень
     return 'medium';
   };
@@ -74,16 +74,16 @@ const CalendarView = () => {
   // Модификаторы для дней с занятиями
   const modifiers = useMemo(() => {
     const mods: Record<string, Date[]> = {};
-    
+
     sessionsData.forEach((session) => {
       // Парсим дату в формате YYYY-MM-DD и создаем Date в локальном времени
       // чтобы избежать проблем с часовыми поясами
       const [year, month, day] = session.date.split('-').map(Number);
       const sessionDate = new Date(year, month - 1, day);
       sessionDate.setHours(0, 0, 0, 0);
-      
+
       const level = getSessionLevel(session.durationSeconds);
-      
+
       if (level) {
         const key = `session-${level}`;
         if (!mods[key]) {
@@ -92,7 +92,7 @@ const CalendarView = () => {
         mods[key].push(sessionDate);
       }
     });
-    
+
     return mods;
   }, [sessionsData]);
 
@@ -116,11 +116,11 @@ const CalendarView = () => {
     }: React.ComponentProps<typeof DayButton>) {
       const defaultClassNames = getDefaultClassNames();
       const ref = useRef<HTMLButtonElement>(null);
-      
+
       useEffect(() => {
         if (modifiers.focused) ref.current?.focus();
       }, [modifiers.focused]);
-      
+
       // Формируем ключ даты для поиска в Map
       const dateKey = `${day.date.getFullYear()}-${String(day.date.getMonth() + 1).padStart(2, '0')}-${String(day.date.getDate()).padStart(2, '0')}`;
       const durationSeconds = sessionsMap.get(dateKey) || 0;
@@ -157,9 +157,7 @@ const CalendarView = () => {
       return (
         <Tooltip>
           <TooltipTrigger asChild>{button}</TooltipTrigger>
-          <TooltipContent>
-            {formatDuration(durationSeconds)}
-          </TooltipContent>
+          <TooltipContent>{formatDuration(durationSeconds)}</TooltipContent>
         </Tooltip>
       );
     };
@@ -177,7 +175,7 @@ const CalendarView = () => {
       components={{
         DayButton: CustomDayButton,
       }}
-      className="rounded-lg border [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
+      className="rounded-lg border "
       buttonVariant="ghost"
     />
   );

@@ -32,6 +32,7 @@ import {
 } from '~/components/ui/sidebar';
 import { Link } from 'react-router';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
+import CalendarView from './CalendarView';
 
 const data = {
   user: {
@@ -152,6 +153,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <div className="mt-4 w-full flex flex-col gap-4 items-center justify-center">
+          <CalendarView />
+        </div>
+
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

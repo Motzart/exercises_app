@@ -178,7 +178,10 @@ function DroppableColumn({
         <h3 className="text-sm font-semibold mb-3">
           {title} ({count})
         </h3>
-        <div className="overflow-y-auto max-h-[350px] flex-1" style={{ touchAction: 'pan-y' }}>
+        <div
+          className="overflow-y-auto max-h-[350px] flex-1"
+          style={{ touchAction: 'pan-y' }}
+        >
           {children}
         </div>
       </CardContent>

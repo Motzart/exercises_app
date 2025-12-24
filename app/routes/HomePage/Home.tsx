@@ -22,6 +22,7 @@ import RunExercise from '~/components/RunExercise';
 import { useModal } from '~/hooks/useModal';
 import { PlayListItems } from '~/components/PlayListItem';
 import CalendarView from '~/components/CalendarView';
+import { ScrollArea } from '~/components/ui/scroll-area';
 
 const Home = () => {
   const { openModal } = useModal();
@@ -45,21 +46,21 @@ const Home = () => {
       <div className="px-4 lg:px-6">
         {/* <ChartAreaInteractive /> */}
         {/* <GraphStats /> */}
-        <div className="w-full flex flex-row gap-4 justify-between">
-          <div>Events:</div>
-          <CalendarView />
-        </div>
         <div className=" flex flex-row gap-4">
           <div className="w-full">
             <h1 className="pb-4">Вибрані вправи:</h1>
-            <CustomItems
-              exercises={exercises || []}
-              onItemClick={handleOpenPracticeModal}
-            />
+            <ScrollArea className="h-[500px] rounded-md border p-4">
+              <CustomItems
+                exercises={exercises || []}
+                onItemClick={handleOpenPracticeModal}
+              />
+            </ScrollArea>
           </div>
           <div className="w-full">
             <h1 className="pb-4">Списки вправ:</h1>
-            <PlayListItems playlists={playlists || []} />
+            <ScrollArea className="h-[500px] rounded-md border p-4">
+              <PlayListItems playlists={playlists || []} />
+            </ScrollArea>
           </div>
         </div>
       </div>
