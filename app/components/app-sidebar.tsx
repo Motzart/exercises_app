@@ -66,6 +66,11 @@ const data = {
       url: '/calendar',
       icon: IconUsers,
     },
+    {
+      title: 'Акорди',
+      url: '/chords',
+      icon: IconUsers,
+    },
   ],
   navClouds: [
     {
