@@ -1,11 +1,27 @@
 import { CheckIcon, PauseIcon, PlayPauseIcon } from '@heroicons/react/16/solid';
+import { IconNotebook } from '@tabler/icons-react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useStopwatch } from 'react-timer-hook';
 import type { CreateSessionInput, Exercise } from '~/types/exercise';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useCreateSession } from '~/hooks/useSession';
+import { useNotes, useCreateNote } from '~/hooks/useNotes';
+import { useIsMobile } from '~/hooks/use-mobile';
 import SliderNotes from './SliderNotes';
 import { Button } from './ui/button';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from './ui/drawer';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
+import { Textarea } from './ui/textarea';
 import { cn } from '~/lib/utils';
 
 const OwnTimer = ({
@@ -18,7 +34,11 @@ const OwnTimer = ({
   const { user } = useContext(SupabaseAuthContext);
   const createSessionMutation = useCreateSession();
   const [session, setSession] = useState<CreateSessionInput | null>(null);
+  const [newNoteContent, setNewNoteContent] = useState('');
   const startTimeRef = useRef<Date | null>(null);
+  const { data: notes = [] } = useNotes(exercise?.id);
+  const createNoteMutation = useCreateNote();
+  const isMobile = useIsMobile();
 
   const { totalSeconds, isRunning, start, pause } = useStopwatch({
     autoStart: false,
@@ -93,6 +113,52 @@ const OwnTimer = ({
   ];
 
   const timeMarkers = ['5хв', '10хв', '15хв'];
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Сьогодні';
+    }
+    if (date.toDateString() === yesterday.toDateString()) {
+      return 'Вчора';
+    }
+    return date.toLocaleDateString('uk-UA', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  };
+
+  const formatNoteTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  // Sort notes by date (newest first)
+  const sortedNotes = [...notes].sort((a, b) => {
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+
+  const handleSaveNote = async () => {
+    if (!newNoteContent.trim() || !exercise?.id) return;
+
+    try {
+      await createNoteMutation.mutateAsync({
+        content: newNoteContent.trim(),
+        exercise_id: exercise.id,
+      });
+      setNewNoteContent('');
+    } catch (error) {
+      console.error('Failed to create note:', error);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -171,6 +237,73 @@ const OwnTimer = ({
               {createSessionMutation.isPending ? 'Збереження...' : 'Завершити'}
             </span>
           </Button>
+
+          <Drawer direction={isMobile ? 'bottom' : 'right'}>
+            <DrawerTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full h-14 w-14 sm:h-16 sm:w-16 border-2 cursor-pointer"
+                type="button"
+              >
+                <IconNotebook className="size-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader className="gap-1">
+                <DrawerTitle>Нотатки</DrawerTitle>
+              </DrawerHeader>
+              <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm">
+                {sortedNotes.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    Поки що немає нотаток
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {sortedNotes.map((note, index) => (
+                      <div key={note.id}>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-muted-foreground text-xs font-medium">
+                              {formatDate(note.created_at)} о {formatNoteTime(note.created_at)}
+                            </Label>
+                          </div>
+                          <div className="text-sm whitespace-pre-wrap wrap-break-word">
+                            {note.content}
+                          </div>
+                        </div>
+                        {index < sortedNotes.length - 1 && <Separator className="mt-4" />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <DrawerFooter className="gap-4">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-sm font-medium">Додати нотатку</Label>
+                  <Textarea
+                    value={newNoteContent}
+                    onChange={(e) => setNewNoteContent(e.target.value)}
+                    placeholder="Введіть вашу нотатку..."
+                    className="min-h-[100px] resize-none"
+                    rows={4}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      onClick={handleSaveNote}
+                      disabled={!newNoteContent.trim() || createNoteMutation.isPending}
+                      className="flex-1"
+                    >
+                      {createNoteMutation.isPending ? 'Збереження...' : 'Зберегти'}
+                    </Button>
+                    <DrawerClose asChild>
+                      <Button variant="outline">Закрити</Button>
+                    </DrawerClose>
+                  </div>
+                </div>
+              </DrawerFooter>
+            </DrawerContent>
+          </Drawer>
         </div>
       </div>
 
