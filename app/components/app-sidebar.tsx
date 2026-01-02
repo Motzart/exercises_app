@@ -51,26 +51,31 @@ const data = {
       url: '/exercises',
       icon: IconFileWord,
     },
+    // {
+    //   title: 'Огляд',
+    //   url: '/overview',
+    //   icon: IconChartBar,
+    // },
     {
       title: 'Аналітика',
-      url: '/overview',
-      icon: IconChartBar,
+      url: '/analytics',
+      icon: IconReport,
     },
     {
       title: 'Історія',
       url: '/history',
       icon: IconFolder,
     },
-    {
-      title: 'Календар',
-      url: '/calendar',
-      icon: IconUsers,
-    },
-    {
-      title: 'Акорди',
-      url: '/chords',
-      icon: IconUsers,
-    },
+    // {
+    //   title: 'Календар',
+    //   url: '/calendar',
+    //   icon: IconUsers,
+    // },
+    // {
+    //   title: 'Акорди',
+    //   url: '/chords',
+    //   icon: IconUsers,
+    // },
   ],
   navClouds: [
     {
@@ -121,16 +126,16 @@ const data = {
     },
   ],
   navSecondary: [
-    {
-      title: 'Налаштування',
-      url: '#',
-      icon: IconSettings,
-    },
-    {
-      title: 'Допомога',
-      url: '#',
-      icon: IconHelp,
-    },
+    // {
+    //   title: 'Налаштування',
+    //   url: '#',
+    //   icon: IconSettings,
+    // },
+    // {
+    //   title: 'Допомога',
+    //   url: '#',
+    //   icon: IconHelp,
+    // },
   ],
 };
 

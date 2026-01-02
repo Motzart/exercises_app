@@ -1024,3 +1024,228 @@ export async function deletePlaylist(playlistId: string) {
     throw new Error(error.message || 'Failed to delete playlist');
   }
 }
+
+export interface TopExercise {
+  exerciseId: string;
+  exerciseName: string;
+  totalDurationSeconds: number;
+  sessionCount: number;
+}
+
+export async function getTopExercisesByTime(
+  limit: number = 10,
+  startDate?: Date,
+  endDate?: Date,
+): Promise<TopExercise[]> {
+  const userId = await getCurrentUserId();
+
+  let query = supabaseClient
+    .from('sessions')
+    .select(
+      `
+      exercise_id,
+      duration_seconds,
+      exercises!inner(
+        id,
+        name
+      )
+    `,
+    )
+    .eq('user_id', userId);
+
+  if (startDate) {
+    query = query.gte('created_at', startDate.toISOString());
+  }
+
+  if (endDate) {
+    const endDateISO = new Date(endDate);
+    endDateISO.setHours(23, 59, 59, 999);
+    query = query.lte('created_at', endDateISO.toISOString());
+  }
+
+  const { data: sessions, error } = await query;
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get top exercises');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return [];
+  }
+
+  // Group by exercise and calculate totals
+  const exerciseMap = new Map<
+    string,
+    { name: string; totalSeconds: number; count: number }
+  >();
+
+  sessions.forEach((session: any) => {
+    const exerciseId = session.exercise_id;
+    const exerciseName = session.exercises?.name || 'Unknown';
+    const durationSeconds = session.duration_seconds || 0;
+
+    if (exerciseMap.has(exerciseId)) {
+      const existing = exerciseMap.get(exerciseId)!;
+      existing.totalSeconds += durationSeconds;
+      existing.count += 1;
+    } else {
+      exerciseMap.set(exerciseId, {
+        name: exerciseName,
+        totalSeconds: durationSeconds,
+        count: 1,
+      });
+    }
+  });
+
+  // Convert to array and sort by total duration
+  const topExercises: TopExercise[] = Array.from(exerciseMap.entries())
+    .map(([exerciseId, { name, totalSeconds, count }]) => ({
+      exerciseId,
+      exerciseName: name,
+      totalDurationSeconds: totalSeconds,
+      sessionCount: count,
+    }))
+    .sort((a, b) => b.totalDurationSeconds - a.totalDurationSeconds)
+    .slice(0, limit);
+
+  return topExercises;
+}
+
+export async function getAverageSessionDuration(
+  startDate?: Date,
+  endDate?: Date,
+): Promise<number> {
+  const userId = await getCurrentUserId();
+
+  let query = supabaseClient
+    .from('sessions')
+    .select('duration_seconds')
+    .eq('user_id', userId);
+
+  if (startDate) {
+    query = query.gte('created_at', startDate.toISOString());
+  }
+
+  if (endDate) {
+    const endDateISO = new Date(endDate);
+    endDateISO.setHours(23, 59, 59, 999);
+    query = query.lte('created_at', endDateISO.toISOString());
+  }
+
+  const { data: sessions, error } = await query;
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get average session duration');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return 0;
+  }
+
+  const totalSeconds = sessions.reduce(
+    (sum, session) => sum + (session.duration_seconds || 0),
+    0,
+  );
+
+  return Math.round(totalSeconds / sessions.length);
+}
+
+export async function getPracticeDaysCount(
+  startDate: Date,
+  endDate: Date,
+): Promise<number> {
+  const userId = await getCurrentUserId();
+
+  const startDateISO = new Date(startDate);
+  startDateISO.setHours(0, 0, 0, 0);
+  const startDateISOString = startDateISO.toISOString();
+
+  const endDateISO = new Date(endDate);
+  endDateISO.setHours(23, 59, 59, 999);
+  const endDateISOString = endDateISO.toISOString();
+
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select('created_at')
+    .eq('user_id', userId)
+    .gte('created_at', startDateISOString)
+    .lte('created_at', endDateISOString);
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get practice days count');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return 0;
+  }
+
+  // Get unique dates
+  const uniqueDates = new Set<string>();
+  sessions.forEach((session: any) => {
+    const sessionDate = new Date(session.created_at);
+    const dateKey = sessionDate.toISOString().split('T')[0];
+    uniqueDates.add(dateKey);
+  });
+
+  return uniqueDates.size;
+}
+
+export async function getPracticeStreak(): Promise<number> {
+  const userId = await getCurrentUserId();
+
+  // Get all sessions ordered by date descending
+  const { data: sessions, error } = await supabaseClient
+    .from('sessions')
+    .select('created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw new Error(error.message || 'Failed to get practice streak');
+  }
+
+  if (!sessions || sessions.length === 0) {
+    return 0;
+  }
+
+  // Get unique dates
+  const uniqueDates = new Set<string>();
+  sessions.forEach((session: any) => {
+    const sessionDate = new Date(session.created_at);
+    const dateKey = sessionDate.toISOString().split('T')[0];
+    uniqueDates.add(dateKey);
+  });
+
+  // Sort dates descending
+  const sortedDates = Array.from(uniqueDates).sort((a, b) =>
+    b.localeCompare(a),
+  );
+
+  // Check if today or yesterday is in the list
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayKey = today.toISOString().split('T')[0];
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = yesterday.toISOString().split('T')[0];
+
+  // If today is not in the list, start from yesterday
+  let currentDate = sortedDates.includes(todayKey) ? today : yesterday;
+  let streak = 0;
+  let checkDate = new Date(currentDate);
+
+  // Count consecutive days
+  for (let i = 0; i < sortedDates.length; i++) {
+    const checkDateKey = checkDate.toISOString().split('T')[0];
+
+    if (sortedDates.includes(checkDateKey)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}

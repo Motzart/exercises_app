@@ -107,7 +107,9 @@ const GraphStats = () => {
       {
         label: 'робочі сесії',
         data: sessionsData || [0, 0, 0, 0, 0, 0, 0],
-        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+        backgroundColor: 'rgba(74, 222, 128, 0.6)',
+        borderColor: '#4ade80',
+        borderWidth: 1,
         borderRadius: 32,
       },
     ],
