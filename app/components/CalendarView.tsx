@@ -62,9 +62,9 @@ const CalendarView = () => {
     if (hours < 1) {
       return 'low'; // Голубоватый (< 1 часа)
     } else if (hours >= 1 && hours <= 2) {
-      return 'medium'; // Зеленый (от 1 до 2 часов включительно)
+      return 'medium-blue'; // Оранжевый (от 1 до 2 часов включительно)
     } else if (hours > 3) {
-      return 'high'; // Ярко зеленый (> 3 часов)
+      return 'high'; // Красный (> 3 часов)
     }
 
     // От 2 до 3 часов - используем средний уровень
@@ -101,8 +101,9 @@ const CalendarView = () => {
   const modifiersClassNames = useMemo(() => {
     return {
       'session-low': 'bg-cyan-100/70 dark:bg-[#0e4429]/60 rounded-md',
+      'session-medium-blue': 'bg-orange-300/75 dark:bg-orange-600/70 rounded-md',
       'session-medium': 'bg-green-200/75 dark:bg-[#1a7f37]/70 rounded-md',
-      'session-high': 'bg-green-400/85 dark:bg-[#238636]/85 rounded-md',
+      'session-high': 'bg-red-400/85 dark:bg-red-600/80 rounded-md',
     };
   }, []);
 
