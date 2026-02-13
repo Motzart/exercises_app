@@ -11,6 +11,7 @@ import {
   IconHelp,
   IconInnerShadowTop,
   IconListDetails,
+  IconMusic,
   IconNotebook,
   IconReport,
   IconSearch,
@@ -65,6 +66,11 @@ const data = {
       title: 'Історія',
       url: '/history',
       icon: IconFolder,
+    },
+    {
+      title: 'Гами',
+      url: '/scales',
+      icon: IconMusic,
     },
     // {
     //   title: 'Календар',

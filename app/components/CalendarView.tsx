@@ -100,9 +100,9 @@ const CalendarView = () => {
   // Используем цвета, похожие на карту активности GitHub для лучшей видимости на темном фоне
   const modifiersClassNames = useMemo(() => {
     return {
-      'session-low': 'bg-cyan-100/70 dark:bg-[#0e4429]/60 rounded-md',
-      'session-medium-blue': 'bg-orange-300/75 dark:bg-orange-600/70 rounded-md',
-      'session-medium': 'bg-green-200/75 dark:bg-[#1a7f37]/70 rounded-md',
+      'session-low': 'bg-gray-200/70 dark:bg-gray-600/60 rounded-md',
+      'session-medium-blue': 'bg-green-200/75 dark:bg-[#1a7f37]/70 rounded-md',
+      'session-medium': 'bg-green-800/75 dark:bg-green-900/70 rounded-md',
       'session-high': 'bg-red-400/85 dark:bg-red-600/80 rounded-md',
     };
   }, []);

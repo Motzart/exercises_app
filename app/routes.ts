@@ -18,6 +18,7 @@ export default [
     route('/exercises', 'routes/ExercisesPage.tsx'),
     route('/helpers', 'routes/Helpers/HelpersPage.tsx'),
     route('/chords', 'routes/ChordsPage.tsx'),
+    route('/scales', 'routes/ScalesPage.tsx'),
   ]),
   route('/login', 'routes/LoginPage.tsx'),
 ] satisfies RouteConfig;
