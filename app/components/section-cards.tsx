@@ -110,19 +110,9 @@ export function SectionCards() {
             {isLoading ? '...' : formatDurationToUkrainian(totalDuration)}
           </CardTitle>
           <CardAction>
-            {/* <Badge variant="outline" className="bg-green-500 text-white">
-              <IconTrendingUp />
-              +00.00%
-            </Badge> */}
+
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Час занять зростає {' '}
-            <IconTrendingUp className="size-4 text-green-500" />
-          </div>
-        </CardFooter>
-        <IconClockHour4 className="absolute bottom-4 right-4 size-20 text-muted-foreground/20" />
       </Card>
       <Card className="@container/card relative overflow-hidden">
         <CardHeader>
@@ -155,25 +145,6 @@ export function SectionCards() {
             )}
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          {changeData && !isLoadingToday && !isLoadingYesterday ? (
-            <div className="line-clamp-1 flex gap-2 font-medium">
-              {changeData.isIncrease
-                ? `Час збільшився на ${changeData.percentage}%`
-                : `Час зменшився на ${changeData.percentage}%`}
-              {changeData.isIncrease ? (
-                <IconTrendingUp className="size-4 text-green-500" />
-              ) : (
-                <IconTrendingDown className="text-red-500 size-4" />
-              )}
-            </div>
-          ) : (
-            <div className="line-clamp-1 flex gap-2 font-medium">
-              Загальний час за сьогодні
-            </div>
-          )}
-        </CardFooter>
-        <IconSun className="absolute bottom-4 right-4 size-20 text-muted-foreground/20" />
       </Card>
       <Card className="@container/card relative overflow-hidden">
         <CardHeader>
@@ -184,18 +155,8 @@ export function SectionCards() {
               : formatDurationToUkrainian(yesterdayDuration)}
           </CardTitle>
           <CardAction>
-            {/* <Badge variant="outline" className="bg-green-500 text-white">
-              <IconTrendingUp />
-              +12.5%
-            </Badge> */}
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">
-            Загальний час за минулу добу
-          </div>
-        </CardFooter>
-        <IconHistory className="absolute bottom-4 right-4 size-20 text-muted-foreground/20" />
       </Card>
       <Card className="@container/card relative overflow-hidden">
         <CardHeader>
@@ -204,16 +165,8 @@ export function SectionCards() {
             {isLoadingExercises ? '...' : exercisesCount || 0}
           </CardTitle>
           <CardAction>
-            {/* <Badge variant="outline" className="bg-green-500 text-white">
-              <IconTrendingUp />
-              +2
-            </Badge> */}
           </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="text-muted-foreground">Кількість доданих вправ</div>
-        </CardFooter>
-        <IconMusic className="absolute bottom-4 right-4 size-20 text-muted-foreground/20" />
       </Card>
     </div>
   );

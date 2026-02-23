@@ -1,23 +1,6 @@
 import { useContext, useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import {
-  DndContext,
-  MouseSensor,
-  TouchSensor,
-  KeyboardSensor,
-  useSensor,
-  useSensors,
-  useDraggable,
-  useDroppable,
-  DragOverlay,
-} from '@dnd-kit/core';
-import type {
-  DragEndEvent,
-  DragOverEvent,
-  DragStartEvent,
-} from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import { SupabaseAuthContext } from '~/lib/SupabaseAuthProvider';
 import { useModal } from '~/hooks/useModal';
 import { useCreatePlaylist } from '~/hooks/useExercises';
@@ -26,8 +9,7 @@ import Devider from './Devider';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { X } from 'lucide-react';
-import { cn } from '~/lib/utils';
+import { Minus, Plus } from 'lucide-react';
 import type { Exercise } from '~/types/exercise';
 
 const PlaylistSchema = Yup.object().shape({
@@ -39,89 +21,16 @@ const PlaylistSchema = Yup.object().shape({
 
 interface ExerciseItemProps {
   exercise: Exercise;
-  isDragging: boolean;
+  onAdd: (exercise: Exercise) => void;
 }
 
-function ExerciseItem({ exercise, isDragging }: ExerciseItemProps) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `exercise-${exercise.id}`,
-    data: {
-      type: 'exercise',
-      exercise,
-    },
-  });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.4 : 1,
-  };
-
+function ExerciseItem({ exercise, onAdd }: ExerciseItemProps) {
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        touchAction: 'none',
-      }}
-      {...listeners}
-      {...attributes}
-      className={cn(
-        'p-3 mb-2 rounded-md bg-card border border-border cursor-grab active:cursor-grabbing hover:bg-accent transition-colors select-none',
-        isDragging && 'opacity-40',
-      )}
-    >
-      <div className="text-sm font-medium">{exercise.name}</div>
-      {exercise.description && (
-        <div className="text-xs text-muted-foreground mt-1">
-          {exercise.description}
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface SelectedExerciseItemProps {
-  exercise: Exercise;
-  isDragging: boolean;
-  onRemove: (exerciseId: string) => void;
-}
-
-function SelectedExerciseItem({
-  exercise,
-  isDragging,
-  onRemove,
-}: SelectedExerciseItemProps) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: `exercise-${exercise.id}`,
-    data: {
-      type: 'exercise',
-      exercise,
-    },
-  });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.4 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        touchAction: 'none',
-      }}
-      {...listeners}
-      {...attributes}
-      className={cn(
-        'p-3 mb-2 rounded-md bg-card border border-border flex items-center justify-between group cursor-grab active:cursor-grabbing hover:bg-accent transition-colors select-none',
-        isDragging && 'opacity-40',
-      )}
-    >
-      <div className="flex-1">
+    <div className="p-3 mb-2 rounded-md bg-card border border-border flex items-center justify-between gap-2 hover:bg-accent transition-colors">
+      <div className="flex-1 min-w-0">
         <div className="text-sm font-medium">{exercise.name}</div>
         {exercise.description && (
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="text-xs text-muted-foreground mt-1 truncate">
             {exercise.description}
           </div>
         )}
@@ -129,59 +38,64 @@ function SelectedExerciseItem({
       <Button
         type="button"
         variant="ghost"
-        size="icon-sm"
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(exercise.id);
-        }}
-        className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
-        aria-label="Видалити"
+        size="icon"
+        onClick={() => onAdd(exercise)}
+        className="shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+        aria-label="Додати до плейлисту"
       >
-        <X className="h-4 w-4" />
+        <Plus className="h-4 w-4" />
       </Button>
     </div>
   );
 }
 
-interface DroppableColumnProps {
-  id: string;
+interface SelectedExerciseItemProps {
+  exercise: Exercise;
+  onRemove: (exerciseId: string) => void;
+}
+
+function SelectedExerciseItem({
+  exercise,
+  onRemove,
+}: SelectedExerciseItemProps) {
+  return (
+    <div className="p-3 mb-2 rounded-md bg-card border border-border flex items-center justify-between gap-2 hover:bg-accent transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-medium">{exercise.name}</div>
+        {exercise.description && (
+          <div className="text-xs text-muted-foreground mt-1 truncate">
+            {exercise.description}
+          </div>
+        )}
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => onRemove(exercise.id)}
+        className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+        aria-label="Прибрати з плейлисту"
+      >
+        <Minus className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+}
+
+interface ColumnProps {
   children: React.ReactNode;
-  isOver: boolean;
   title: string;
   count: number;
 }
 
-function DroppableColumn({
-  id,
-  children,
-  isOver,
-  title,
-  count,
-}: DroppableColumnProps) {
-  const { setNodeRef, isOver: isOverState } = useDroppable({
-    id,
-    data: {
-      type: 'column',
-      accepts: ['exercise'],
-    },
-  });
-
+function Column({ children, title, count }: ColumnProps) {
   return (
-    <Card
-      ref={setNodeRef}
-      className={cn(
-        'min-h-[400px] flex flex-col',
-        (isOver || isOverState) && 'ring-2 ring-primary ring-offset-2',
-      )}
-    >
+    <Card className="min-h-[400px] flex flex-col">
       <CardContent className="p-4 flex-1 flex flex-col">
         <h3 className="text-sm font-semibold mb-3">
           {title} ({count})
         </h3>
-        <div
-          className="overflow-y-auto max-h-[350px] flex-1"
-          style={{ touchAction: 'pan-y' }}
-        >
+        <div className="overflow-y-auto max-h-[350px] flex-1">
           {children}
         </div>
       </CardContent>
@@ -196,79 +110,10 @@ function CreatePlaylist() {
   const { data: exercises = [], isLoading } = useExercises();
 
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [overId, setOverId] = useState<string | null>(null);
-  const [activeExercise, setActiveExercise] = useState<Exercise | null>(null);
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {
-      activationConstraint: {
-        distance: 8,
-      },
-    }),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor),
-  );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const id = event.active.id as string;
-    setActiveId(id);
-
-    if (id.startsWith('exercise-')) {
-      const exerciseId = id.replace('exercise-', '');
-      const exercise = exercises.find((ex) => ex.id === exerciseId);
-      setActiveExercise(exercise || null);
-    }
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    setOverId(event.over?.id as string | null);
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) {
-      setActiveId(null);
-      setOverId(null);
-      return;
-    }
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    if (activeId.startsWith('exercise-')) {
-      const exerciseId = activeId.replace('exercise-', '');
-      const exercise = exercises.find((ex) => ex.id === exerciseId);
-
-      if (!exercise) {
-        setActiveId(null);
-        setOverId(null);
-        return;
-      }
-
-      if (overId === 'column-selected') {
-        // Добавляем упражнение в выбранные, если его там еще нет
-        if (!selectedExercises.find((ex) => ex.id === exercise.id)) {
-          setSelectedExercises([...selectedExercises, exercise]);
-        }
-      } else if (overId === 'column-available') {
-        // Удаляем упражнение из выбранных
-        setSelectedExercises(
-          selectedExercises.filter((ex) => ex.id !== exercise.id),
-        );
-      }
-    }
-
-    setActiveId(null);
-    setOverId(null);
-    setActiveExercise(null);
-  };
-
-  const handleDragCancel = () => {
-    setActiveId(null);
-    setOverId(null);
-    setActiveExercise(null);
+  const addToPlaylist = (exercise: Exercise) => {
+    if (selectedExercises.some((ex) => ex.id === exercise.id)) return;
+    setSelectedExercises([...selectedExercises, exercise]);
   };
 
   const removeFromSelected = (exerciseId: string) => {
@@ -343,84 +188,54 @@ function CreatePlaylist() {
               </div>
 
               <div className="italic text-sm text-muted-foreground text-center">
-                Перетягніть вправи зліва направо, щоб додати їх до плейлисту
+                Натисніть + біля вправи, щоб додати її до плейлисту; − щоб прибрати
               </div>
 
               <Devider />
 
-              <DndContext
-                sensors={sensors}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDragEnd={handleDragEnd}
-                onDragCancel={handleDragCancel}
-              >
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Доступні вправи */}
-                  <DroppableColumn
-                    id="column-available"
-                    title="Доступні вправи"
-                    count={availableExercises.length}
-                    isOver={overId === 'column-available'}
-                  >
-                    {isLoading ? (
-                      <div className="text-muted-foreground text-sm">
-                        Завантаження...
-                      </div>
-                    ) : availableExercises.length === 0 ? (
-                      <div className="text-muted-foreground text-sm italic">
-                        Немає доступних вправ
-                      </div>
-                    ) : (
-                      availableExercises.map((exercise) => (
-                        <ExerciseItem
-                          key={exercise.id}
-                          exercise={exercise}
-                          isDragging={activeId === `exercise-${exercise.id}`}
-                        />
-                      ))
-                    )}
-                  </DroppableColumn>
-
-                  {/* Вибрані вправи */}
-                  <DroppableColumn
-                    id="column-selected"
-                    title="Вибрані вправи"
-                    count={selectedExercises.length}
-                    isOver={overId === 'column-selected'}
-                  >
-                    {selectedExercises.length === 0 ? (
-                      <div className="text-muted-foreground text-sm italic">
-                        Перетягніть вправи сюди
-                      </div>
-                    ) : (
-                      selectedExercises.map((exercise) => (
-                        <SelectedExerciseItem
-                          key={exercise.id}
-                          exercise={exercise}
-                          isDragging={activeId === `exercise-${exercise.id}`}
-                          onRemove={removeFromSelected}
-                        />
-                      ))
-                    )}
-                  </DroppableColumn>
-                </div>
-
-                <DragOverlay>
-                  {activeExercise ? (
-                    <div className="p-3 rounded-md bg-card border border-border shadow-lg rotate-2">
-                      <div className="text-sm font-medium">
-                        {activeExercise.name}
-                      </div>
-                      {activeExercise.description && (
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {activeExercise.description}
-                        </div>
-                      )}
+              <div className="grid grid-cols-2 gap-4">
+                <Column
+                  title="Доступні вправи"
+                  count={availableExercises.length}
+                >
+                  {isLoading ? (
+                    <div className="text-muted-foreground text-sm">
+                      Завантаження...
                     </div>
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
+                  ) : availableExercises.length === 0 ? (
+                    <div className="text-muted-foreground text-sm italic">
+                      Немає доступних вправ
+                    </div>
+                  ) : (
+                    availableExercises.map((exercise) => (
+                      <ExerciseItem
+                        key={exercise.id}
+                        exercise={exercise}
+                        onAdd={addToPlaylist}
+                      />
+                    ))
+                  )}
+                </Column>
+
+                <Column
+                  title="Вибрані вправи"
+                  count={selectedExercises.length}
+                >
+                  {selectedExercises.length === 0 ? (
+                    <div className="text-muted-foreground text-sm italic">
+                      Додайте вправи кнопкою +
+                    </div>
+                  ) : (
+                    selectedExercises.map((exercise) => (
+                      <SelectedExerciseItem
+                        key={exercise.id}
+                        exercise={exercise}
+                        onRemove={removeFromSelected}
+                      />
+                    ))
+                  )}
+                </Column>
+              </div>
 
               <Devider />
 

@@ -67,11 +67,16 @@ const data = {
       url: '/history',
       icon: IconFolder,
     },
-    {
-      title: 'Гами',
-      url: '/scales',
-      icon: IconMusic,
-    },
+    // {
+    //   title: 'Роадмапи',
+    //   url: '/graph',
+    //   icon: IconChartBar,
+    // }
+    // {
+    //   title: 'Гами',
+    //   url: '/scales',
+    //   icon: IconMusic,
+    // },
     // {
     //   title: 'Календар',
     //   url: '/calendar',
